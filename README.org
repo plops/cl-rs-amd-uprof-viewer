@@ -1,0 +1,10 @@
+* Installation
+
+- https://developer.amd.com/amd-uprof/
+- install module: sudo sh AMDuProf_Linux_x64_3.2.228/bin/AMDPowerProfilerDriver.sh
+- /dev/AMDPowerProfiler
+- cat /proc/AMDPowerProfiler/device
+- PwrProfModule.c .unlocked_ioctl = PwrProfDrvDeviceIoctl
+- src/PwrProfEntry.c: PwrProfDrvIoctlImpl
+- looks a bit too low level, I guess I will need to link to their library
+- http://developer.amd.com/wordpress/media/2013/12/AMDuprof-User_Guide.pdf
