@@ -8,3 +8,4 @@
 - src/PwrProfEntry.c: PwrProfDrvIoctlImpl
 - looks a bit too low level, I guess I will need to link to their library
 - http://developer.amd.com/wordpress/media/2013/12/AMDuprof-User_Guide.pdf
+- Help/AMDPowerProfilerAPI.pdf

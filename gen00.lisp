@@ -93,7 +93,8 @@ libc = \"*\"
 	    (extern
 	     ;; AMDTPwrProfileMode .. uint .. 0=online
 	     ;; AMDTResult .. uint
-	     "fn AMDTPwrProfileInitialize(u64) -> u64;"))
+	     ;"fn AMDTPwrProfileInitialize(mode:u64) -> u64;"
+	     "fn _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(mode:u64) -> u64;"))
 
 
 	   (defstruct0 System
@@ -227,8 +228,11 @@ libc = \"*\"
 							  &event)))))))))))
 	   
 	   (defun main ()
-	     (let ((x (unsafe (AMDTPwrProfileInitialize 0))))
-	       ,(logprint "init" `(x)))
+	     (let ((x (unsafe (_Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode 0)
+					; (AMDTPwrProfileInitialize 0)
+			      )))
+	       ;,(logprint "init" `((x.display)))
+	       )
 	     
 	     #+nil (let* ((client (request--Client--new))
 		    (body (dot client
