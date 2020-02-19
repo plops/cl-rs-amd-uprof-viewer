@@ -106,8 +106,10 @@ impl System {
 }
 fn main() {
     let x = unsafe {
-        _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(0);
+        return _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(0);
     };
+    let success = 0;
+    assert!((x) == (success));
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))

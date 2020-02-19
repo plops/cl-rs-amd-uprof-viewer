@@ -228,9 +228,12 @@ libc = \"*\"
 							  &event)))))))))))
 	   
 	   (defun main ()
-	     (let ((x (unsafe (_Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode 0)
+	     (let ((x (unsafe (return (_Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode 0))
 					; (AMDTPwrProfileInitialize 0)
-			      )))
+			      ))
+		   (success 0)
+		   )
+	       (assert! (== x success))
 	       ;,(logprint "init" `((x.display)))
 	       )
 	     

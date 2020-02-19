@@ -9,3 +9,8 @@
 - looks a bit too low level, I guess I will need to link to their library
 - http://developer.amd.com/wordpress/media/2013/12/AMDuprof-User_Guide.pdf
 - Help/AMDPowerProfilerAPI.pdf
+
+- this library is C++ without extern C interface and the function names are mangled
+
+- https://www.reddit.com/r/rust/comments/4yz59h/cc_interop/
+- exceptions could be very bad
