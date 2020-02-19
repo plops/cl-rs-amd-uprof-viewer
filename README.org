@@ -13,4 +13,4 @@
 - this library is C++ without extern C interface and the function names are mangled
 
 - https://www.reddit.com/r/rust/comments/4yz59h/cc_interop/
-- exceptions could be very bad
+- exceptions could be very bad, not sure if amd uses them
