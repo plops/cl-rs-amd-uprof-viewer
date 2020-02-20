@@ -192,7 +192,20 @@
 							   (type samples_pair_t pair))
 						  (do0
 						   (unless (== AMDT_STATUS_OK res)
-						     ,(logprint "fail" `(res))
+						     (case res
+						       ,@(loop for e in `(AMDT_STATUS_OK
+									  AMDT_ERROR_INVALIDARG
+									  AMDT_ERROR_DRIVER_UNINITIALIZED
+									  AMDT_ERROR_PROFILE_NOT_STARTED
+									  AMDT_ERROR_PROFILE_DATA_NOT_AVAILABLE
+									  AMDT_ERROR_OUTOFMEMORY
+									  AMDT_ERROR_SMU_ACCESS_FAILED
+									  AMDT_ERROR_FAIL) collect
+							      `(,e (progn
+								     ,(logprint e `())
+								     break)
+								   ))
+						       )
 						     (return pair)))
 						  (setf pair.result n
 							pair.handle (reinterpret_cast<void*> samples))

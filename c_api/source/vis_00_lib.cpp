@@ -115,15 +115,104 @@ samples_pair_t ReadAllEnabledCounters() {
   samples_pair_t pair = {-1, nullptr};
   auto res = AMDTPwrReadAllEnabledCounters(&n, &samples);
   if (!((AMDT_STATUS_OK) == (res))) {
+    switch (res) {
+    case AMDT_STATUS_OK: {
 
-    (std::cout) << (std::setw(10))
-                << (std::chrono::high_resolution_clock::now()
-                        .time_since_epoch()
-                        .count())
-                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
-                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
-                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
-                << ("'") << (std::endl) << (std::flush);
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_STATUS_OK") << (" ") << (std::endl)
+                  << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_INVALIDARG: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_INVALIDARG") << (" ") << (std::endl)
+                  << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_DRIVER_UNINITIALIZED: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_DRIVER_UNINITIALIZED") << (" ")
+                  << (std::endl) << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_PROFILE_NOT_STARTED: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_PROFILE_NOT_STARTED") << (" ")
+                  << (std::endl) << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_PROFILE_DATA_NOT_AVAILABLE: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_PROFILE_DATA_NOT_AVAILABLE") << (" ")
+                  << (std::endl) << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_OUTOFMEMORY: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_OUTOFMEMORY") << (" ") << (std::endl)
+                  << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_SMU_ACCESS_FAILED: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_SMU_ACCESS_FAILED") << (" ")
+                  << (std::endl) << (std::flush);
+      break;
+    }
+    case AMDT_ERROR_FAIL: {
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("AMDT_ERROR_FAIL") << (" ") << (std::endl)
+                  << (std::flush);
+      break;
+    }
+    }
     return pair;
   };
   pair.result = n;
