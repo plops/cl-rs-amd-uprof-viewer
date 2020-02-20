@@ -9,7 +9,7 @@ use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, Ui};
 use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
-use std::{thread, time};
+use std::{fs, thread, time};
 struct System {
     event_loop: EventLoop<()>,
     display: glium::Display,
@@ -101,6 +101,82 @@ impl System {
     }
 }
 fn main() {
+    loop {
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents = fs::read_to_string(
+                "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input",
+            )
+            .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents = fs::read_to_string(
+                "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input",
+            )
+            .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+        {
+            let contents =
+                fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input")
+                    .expect("read error");
+            {
+                println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input  contents={}", Utc::now(), file!(), line!(), contents);
+            };
+        }
+    }
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))

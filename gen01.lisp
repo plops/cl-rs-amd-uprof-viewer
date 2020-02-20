@@ -80,7 +80,8 @@ crossbeam-channel = \"*\"
 	    "use imgui_glium_renderer::Renderer;"
 	    "use imgui_winit_support::{HiDpiMode,WinitPlatform};"
 	    "use std::time::Instant;")
-	   (use (std (curly thread time)))
+	   (use (std (curly thread time fs))
+		)
 	  
 	   
 
@@ -218,6 +219,15 @@ crossbeam-channel = \"*\"
 	   
 	   (defun main ()
 	     
+	     ,(let ((files (directory #P"/sys/class/hwmon/hwmon0/*input")))
+		`(do0
+		  (loop
+		   ,@(loop for f in files collect
+			  `(progn
+			     (let ((contents (dot (fs--read_to_string (string ,f))
+						  (expect (string "read error")))))
+			       ,(logprint f `(contents))))))
+		  ))
 	     
 	     #+nil (let* ((client (request--Client--new))
 		    (body (dot client
@@ -257,4 +267,5 @@ crossbeam-channel = \"*\"
     
     (write-source *code-file*
 		  code)))
+
 
