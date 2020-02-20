@@ -52,6 +52,7 @@ imgui-glium-renderer = \"*\"
 imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
+positioned-io = \"*\"
 "
 	    
 
@@ -75,12 +76,14 @@ crossbeam-channel = \"*\"
 			       "glutin::window::WindowBuilder"
 			       "{Display,Surface}")
 		 collect
-		   (format nil "use glium::~a;" e))
-	    "use imgui::{Context,FontConfig,FontGlyphRanges,FontSource,Ui};"
-	    "use imgui_glium_renderer::Renderer;"
-	    "use imgui_winit_support::{HiDpiMode,WinitPlatform};"
-	    "use std::time::Instant;")
+		   `(use (glium ,e))))
+	   (use (imgui (curly Context FontConfig FontGlyphRanges FontSource Ui))
+		(imgui_glium_renderer Renderer)
+		(imgui_winit_support (curly HiDpiMode WinitPlatform)))
 	   (use (std (curly thread time fs))
+		(std fs File)
+		(std time Instant)
+		(positioned_io ReadAt)
 		)
 	  
 	   
@@ -216,17 +219,52 @@ crossbeam-channel = \"*\"
 				   (platform.handle_event (imgui.io_mut)
 							  (gl_window.window)
 							  &event)))))))))))
-	   
+	   (defun parse ("data: &[u8]")
+	     (declare (values u64))
+	     (dot data
+		  (iter)
+		  (fold 0
+			(lambda (a b)
+			  (return (coerce (+ (* 10 a)
+					     (- b (byde 0))) u64))))))
 	   (defun main ()
 	     
 	     ,(let ((files (directory #P"/sys/class/hwmon/hwmon0/*input")))
 		`(do0
+		  #+nil
 		  (loop
-		   ,@(loop for f in files collect
+		     ,@(loop for f in files collect
 			  `(progn
 			     (let ((contents (dot (fs--read_to_string (string ,f))
 						  (expect (string "read error")))))
 			       ,(logprint f `(contents))))))
+
+		  (let (,@(loop for f in files and i from 0 collect
+			       `(,(format nil "f~a" i) (dot (File--open (string ,f))
+							    (unwrap)))))
+		    (loop
+		       (let* (,@(loop for f in files and i from 0 collect
+				     `(,(format nil "buf~a" i))))
+			 (declare (type (array u8 512) ,@(loop for f in files and i from 0 collect
+							     (format nil "buf~a" i))))
+			 (let (,@(loop for f in files and i from 0 collect
+				      `(,(format nil "bytes~a" i) (dot ,(format nil "f~a" i) (read_at 0 ,(format nil "&mut buf~a" i))))))
+			   ;; https://users.rust-lang.org/t/reading-integers-from-a-file-into-vector/17517/3
+			   (for ((values i byte) (dot buf0
+						      (iter)
+						      (enumerate)))
+				(match byte
+				  ((byte "\\n") (parse ))
+				  ))
+			   ,(logprint "" (loop for f in files and i from 0 collect
+					      (format nil "buf~a" i)
+						   ))))))
+		  
+		  ,@(loop for f in files collect
+			  `(progn
+			     (let ((contents (dot (fs--read_to_string (string ,f))
+						  (expect (string "read error")))))
+			       ,(logprint f `(contents)))))
 		  ))
 	     
 	     #+nil (let* ((client (request--Client--new))
