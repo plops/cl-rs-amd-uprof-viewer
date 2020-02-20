@@ -25,6 +25,13 @@ extern "C" {
     fn EnableCounter(counter: i64) -> i64;
     fn SetTimerSamplingPeriod(interval_ms: i64) -> i64;
     fn ReadAllEnabledCounters() -> samples_pair_t;
+    fn GetSupportedCounters_num() -> i64;
+    fn GetCounterDesc_counterID(idx: i64) -> i64;
+    fn GetCounterDesc_deviceId(idx: i64) -> i64;
+    fn GetCounterDesc_devType(idx: i64) -> i64;
+    fn GetCounterDesc_devInstanceId(idx: i64) -> i64;
+    fn GetCounterDesc_name(idx: i64) -> *const libc::c_char;
+    fn GetCounterDesc_description(idx: i64) -> *const libc::c_char;
 }
 struct System {
     event_loop: EventLoop<()>,
@@ -121,6 +128,12 @@ fn main() {
     {
         println!("{} {}:{} init  x={}", Utc::now(), file!(), line!(), x);
     }
+    let n = unsafe {
+        GetSupportedCounters_num();
+    };
+    {
+        println!("{} {}:{} supported counters ", Utc::now(), file!(), line!());
+    };
     unsafe {
         StartProfiling();
     }

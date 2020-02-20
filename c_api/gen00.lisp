@@ -172,8 +172,10 @@
 		       ,@(loop for e in `((int ProfileInitialize_online (;(mode int)
 								  )
 					       (do0
-						(let ((mode_ AMDT_PWR_MODE_TIMELINE_ONLINE))
-						 (return (AMDTPwrProfileInitialize mode_)))))
+						(let ((mode_ AMDT_PWR_MODE_TIMELINE_ONLINE)
+						      (res (AMDTPwrProfileInitialize mode_)))
+						   ,(logprint (format nil "~a" 'init) `(res))
+						 (return res))))
 					  (int EnableCounter ((counter int)))
 					  (int SetTimerSamplingPeriod ((interval_ms int)))
 					  (int StartProfiling ())
@@ -190,9 +192,11 @@
 							   (type samples_pair_t pair))
 						  (do0
 						   (unless (== AMDT_STATUS_OK res)
+						     ,(logprint "fail" `(res))
 						     (return pair)))
 						  (setf pair.result n
 							pair.handle (reinterpret_cast<void*> samples))
+						  ,(logprint "" `(pair.result pair.handle))
 						  (return pair))))
 					  
 
@@ -207,12 +211,12 @@
 							   (do0
 							    
 							    (let ((samples (reinterpret_cast<AMDTPwrSample*> handle))
-								  )
+								  (res (dot (aref samples idx)
+									   ,(format nil "m_~a" name))))
 							      
-							      
+							      ,(logprint "" `(idx res))
 							     
-							      (return (dot (aref samples idx)
-									   ,(format nil "m_~a" name))))))))
+							      (return res))))))
 
 					  ,@(loop for var in `((counterID int -1)
 							       (valueCnt int -1)
@@ -250,9 +254,15 @@
 							      (when (== nullptr
 									(dot (aref samples idx)
 									     m_counterValues))
+								,(logprint "fail nullptr" `((dot (aref samples idx)
+									     m_counterValues)))
+
 								(return ,err-value))
 							      (unless (< counter_idx (dot (aref samples idx)
 											  m_numOfCounter))
+								,(logprint "out of bounds" `(counter_idx (dot (aref samples idx)
+											  m_numOfCounter)))
+
 								(return ,err-value))
 							      
 							      
@@ -269,7 +279,9 @@
 							   (type AMDTPwrCounterDesc* desc))
 						  (do0
 						   (unless (== AMDT_STATUS_OK res)
+						     ,(logprint "fail" `(res))
 						     (return -1)))
+						  ,(logprint "" `(n desc))
 						  (return n))))
 					  ,@(loop for var in `((counterID int -1)
 							     (deviceId int -1)
@@ -295,8 +307,10 @@
 							      (declare (type AMDTUInt32 n)
 								       (type AMDTPwrCounterDesc* desc))
 							      (unless (== AMDT_STATUS_OK res)
+								,(logprint "fail" `(res))
 								(return ,err-value))
 							      (unless (< idx n)
+								,(logprint "out of bounds" `(idx n))
 								(return ,err-value))
 							      (return (dot (aref desc idx)
 									  ,(format nil "m_~a" name)))))))))
@@ -307,10 +321,14 @@
 				    (declare ,@(loop for (name type) in params collect
 						    `(type ,type ,name))
 					     (values ,ret-type))
-				    ,(logprint (format nil "~a" name) (loop for (name type) in params collect name))
+				    
 				    ,(if code
-					 code
-					 `(return (,name ,@(loop for (name type) in params collect name))))))))))
+					 `(do0
+					  ,(logprint (format nil "~a" name) (loop for (name type) in params collect name))
+					  ,code)
+					 `(let ((res (,name ,@(loop for (name type) in params collect name))))
+					    ,(logprint (format nil "~a" name) `(res ,@(loop for (name type) in params collect name)))
+					    (return res)))))))))
 	      
 	      #+nil(defun main ()
 		(declare (values int))

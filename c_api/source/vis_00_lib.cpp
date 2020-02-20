@@ -28,20 +28,32 @@ int ProfileInitialize_online() {
       << ("AMDTPwrProfileInitialize_online") << (" ") << (std::endl)
       << (std::flush);
   auto mode_ = AMDT_PWR_MODE_TIMELINE_ONLINE;
-  return AMDTPwrProfileInitialize(mode_);
+  auto res = AMDTPwrProfileInitialize(mode_);
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("init") << (" ")
+      << (std::setw(8)) << (" res='") << (res) << ("'") << (std::endl)
+      << (std::flush);
+  return res;
 }
 int EnableCounter(int counter) {
+  auto res = AMDTPwrEnableCounter(counter);
 
   (std::cout)
       << (std::setw(10))
       << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
       << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
       << (__LINE__) << (" ") << (__func__) << (" ") << ("AMDTPwrEnableCounter")
-      << (" ") << (std::setw(8)) << (" counter='") << (counter) << ("'")
-      << (std::endl) << (std::flush);
-  return AMDTPwrEnableCounter(counter);
+      << (" ") << (std::setw(8)) << (" res='") << (res) << ("'")
+      << (std::setw(8)) << (" counter='") << (counter) << ("'") << (std::endl)
+      << (std::flush);
+  return res;
 }
 int SetTimerSamplingPeriod(int interval_ms) {
+  auto res = AMDTPwrSetTimerSamplingPeriod(interval_ms);
 
   (std::cout)
       << (std::setw(10))
@@ -49,39 +61,45 @@ int SetTimerSamplingPeriod(int interval_ms) {
       << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
       << (__LINE__) << (" ") << (__func__) << (" ")
       << ("AMDTPwrSetTimerSamplingPeriod") << (" ") << (std::setw(8))
-      << (" interval_ms='") << (interval_ms) << ("'") << (std::endl)
-      << (std::flush);
-  return AMDTPwrSetTimerSamplingPeriod(interval_ms);
+      << (" res='") << (res) << ("'") << (std::setw(8)) << (" interval_ms='")
+      << (interval_ms) << ("'") << (std::endl) << (std::flush);
+  return res;
 }
 int StartProfiling() {
+  auto res = AMDTPwrStartProfiling();
 
   (std::cout)
       << (std::setw(10))
       << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
       << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
       << (__LINE__) << (" ") << (__func__) << (" ") << ("AMDTPwrStartProfiling")
-      << (" ") << (std::endl) << (std::flush);
-  return AMDTPwrStartProfiling();
+      << (" ") << (std::setw(8)) << (" res='") << (res) << ("'") << (std::endl)
+      << (std::flush);
+  return res;
 }
 int StopProfiling() {
+  auto res = AMDTPwrStopProfiling();
 
   (std::cout)
       << (std::setw(10))
       << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
       << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
       << (__LINE__) << (" ") << (__func__) << (" ") << ("AMDTPwrStopProfiling")
-      << (" ") << (std::endl) << (std::flush);
-  return AMDTPwrStopProfiling();
+      << (" ") << (std::setw(8)) << (" res='") << (res) << ("'") << (std::endl)
+      << (std::flush);
+  return res;
 }
 int ProfileClose() {
+  auto res = AMDTPwrProfileClose();
 
   (std::cout)
       << (std::setw(10))
       << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
       << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
       << (__LINE__) << (" ") << (__func__) << (" ") << ("AMDTPwrProfileClose")
-      << (" ") << (std::endl) << (std::flush);
-  return AMDTPwrProfileClose();
+      << (" ") << (std::setw(8)) << (" res='") << (res) << ("'") << (std::endl)
+      << (std::flush);
+  return res;
 }
 samples_pair_t ReadAllEnabledCounters() {
 
@@ -97,10 +115,28 @@ samples_pair_t ReadAllEnabledCounters() {
   samples_pair_t pair = {-1, nullptr};
   auto res = AMDTPwrReadAllEnabledCounters(&n, &samples);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return pair;
   };
   pair.result = n;
   pair.handle = reinterpret_cast<void *>(samples);
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" pair.result='") << (pair.result) << ("'")
+      << (std::setw(8)) << (" pair.handle='") << (pair.handle) << ("'")
+      << (std::endl) << (std::flush);
   return pair;
 }
 int ReadAllEnabledCounters_PwrSample_elapsedTimeMs(void *handle, int idx) {
@@ -114,7 +150,16 @@ int ReadAllEnabledCounters_PwrSample_elapsedTimeMs(void *handle, int idx) {
       << (std::setw(8)) << (" handle='") << (handle) << ("'") << (std::setw(8))
       << (" idx='") << (idx) << ("'") << (std::endl) << (std::flush);
   auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
-  return samples[idx].m_elapsedTimeMs;
+  auto res = samples[idx].m_elapsedTimeMs;
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" idx='") << (idx) << ("'") << (std::setw(8))
+      << (" res='") << (res) << ("'") << (std::endl) << (std::flush);
+  return res;
 }
 uint ReadAllEnabledCounters_PwrSample_recordId(void *handle, int idx) {
 
@@ -127,7 +172,16 @@ uint ReadAllEnabledCounters_PwrSample_recordId(void *handle, int idx) {
       << (std::setw(8)) << (" handle='") << (handle) << ("'") << (std::setw(8))
       << (" idx='") << (idx) << ("'") << (std::endl) << (std::flush);
   auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
-  return samples[idx].m_recordId;
+  auto res = samples[idx].m_recordId;
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" idx='") << (idx) << ("'") << (std::setw(8))
+      << (" res='") << (res) << ("'") << (std::endl) << (std::flush);
+  return res;
 }
 int ReadAllEnabledCounters_PwrSample_numOfCounter(void *handle, int idx) {
 
@@ -140,7 +194,16 @@ int ReadAllEnabledCounters_PwrSample_numOfCounter(void *handle, int idx) {
       << (std::setw(8)) << (" handle='") << (handle) << ("'") << (std::setw(8))
       << (" idx='") << (idx) << ("'") << (std::endl) << (std::flush);
   auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
-  return samples[idx].m_numOfCounter;
+  auto res = samples[idx].m_numOfCounter;
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" idx='") << (idx) << ("'") << (std::setw(8))
+      << (" res='") << (res) << ("'") << (std::endl) << (std::flush);
+  return res;
 }
 int ReadAllEnabledCounters_counterValues_counterID(void *handle, int idx,
                                                    int counter_idx) {
@@ -198,9 +261,32 @@ float ReadAllEnabledCounters_counterValues_data(void *handle, int idx,
       << (counter_idx) << ("'") << (std::endl) << (std::flush);
   auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
   if ((nullptr) == (samples[idx].m_counterValues)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail nullptr") << (" ") << (std::setw(8))
+                << (" samples[idx].m_counterValues='")
+                << (samples[idx].m_counterValues) << ("'") << (std::endl)
+                << (std::flush);
     return NAN;
   };
   if (!(counter_idx < samples[idx].m_numOfCounter)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8))
+                << (" counter_idx='") << (counter_idx) << ("'")
+                << (std::setw(8)) << (" samples[idx].m_numOfCounter='")
+                << (samples[idx].m_numOfCounter) << ("'") << (std::endl)
+                << (std::flush);
     return NAN;
   };
   return samples[idx].m_counterValues[counter_idx].m_data;
@@ -218,8 +304,25 @@ int GetSupportedCounters_num() {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" n='") << (n) << ("'") << (std::setw(8))
+      << (" desc='") << (desc) << ("'") << (std::endl) << (std::flush);
   return n;
 }
 int GetCounterDesc_counterID(int idx) {
@@ -235,9 +338,28 @@ int GetCounterDesc_counterID(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_counterID;
@@ -255,9 +377,28 @@ int GetCounterDesc_deviceId(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_deviceId;
@@ -275,9 +416,28 @@ int GetCounterDesc_devType(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_devType;
@@ -295,9 +455,28 @@ int GetCounterDesc_devInstanceId(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_devInstanceId;
@@ -315,9 +494,28 @@ char *GetCounterDesc_name(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return nullptr;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return nullptr;
   };
   return desc[idx].m_name;
@@ -335,9 +533,28 @@ char *GetCounterDesc_description(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return nullptr;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return nullptr;
   };
   return desc[idx].m_description;
@@ -355,9 +572,28 @@ int GetCounterDesc_category(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_category;
@@ -375,9 +611,28 @@ int GetCounterDesc_aggregation(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_aggregation;
@@ -395,9 +650,28 @@ double GetCounterDesc_minValue(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return NAN;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return NAN;
   };
   return desc[idx].m_minValue;
@@ -415,9 +689,28 @@ double GetCounterDesc_maxValue(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return NAN;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return NAN;
   };
   return desc[idx].m_maxValue;
@@ -435,9 +728,28 @@ int GetCounterDesc_units(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_units;
@@ -455,9 +767,28 @@ int GetCounterDesc_isParentCounter(int idx) {
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
     return -1;
   };
   if (!(idx < n)) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("out of bounds") << (" ") << (std::setw(8)) << (" idx='")
+                << (idx) << ("'") << (std::setw(8)) << (" n='") << (n) << ("'")
+                << (std::endl) << (std::flush);
     return -1;
   };
   return desc[idx].m_isParentCounter;
