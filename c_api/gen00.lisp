@@ -285,7 +285,27 @@
 						  (let ((p desc))
 						    (dotimes (i n)
 						      (unless (== nullptr p)
-							)
+							,(let ((l `((counterID int -1)
+								    (deviceId int -1)
+								    (devType int -1)
+								    (devInstanceId int -1)
+							     (name char* nullptr)
+							     (description char* nullptr)
+							     (category int -1)
+							     (aggregation int -1)
+							     (minValue double NAN)
+							     (maxValue double NAN)
+							     (units int -1)
+								    (isParentCounter int -1))))
+							   `(do0
+							     (let (,@(loop for e in l collect
+									  (destructuring-bind (name &rest rest) e
+									    `(,name (-> p ,(format nil "m_~a" name)))))
+
+								   )
+							       ,(logprint "" `(,@(loop for e in l collect
+										      (destructuring-bind (name &rest rest) e
+											name))))))))
 						     (incf p)))
 						  (return n))))
 					  (int EnableAllCounters ()

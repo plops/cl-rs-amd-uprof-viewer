@@ -326,7 +326,40 @@ int GetSupportedCounters_num() {
   auto p = desc;
   for (int i = 0; i < n; (i) += (1)) {
     if (!((nullptr) == (p))) {
-      ;
+      auto counterID = p->m_counterID;
+      auto deviceId = p->m_deviceId;
+      auto devType = p->m_devType;
+      auto devInstanceId = p->m_devInstanceId;
+      auto name = p->m_name;
+      auto description = p->m_description;
+      auto category = p->m_category;
+      auto aggregation = p->m_aggregation;
+      auto minValue = p->m_minValue;
+      auto maxValue = p->m_maxValue;
+      auto units = p->m_units;
+      auto isParentCounter = p->m_isParentCounter;
+
+      (std::cout) << (std::setw(10))
+                  << (std::chrono::high_resolution_clock::now()
+                          .time_since_epoch()
+                          .count())
+                  << (" ") << (std::this_thread::get_id()) << (" ")
+                  << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                  << (" ") << ("") << (" ") << (std::setw(8))
+                  << (" counterID='") << (counterID) << ("'") << (std::setw(8))
+                  << (" deviceId='") << (deviceId) << ("'") << (std::setw(8))
+                  << (" devType='") << (devType) << ("'") << (std::setw(8))
+                  << (" devInstanceId='") << (devInstanceId) << ("'")
+                  << (std::setw(8)) << (" name='") << (name) << ("'")
+                  << (std::setw(8)) << (" description='") << (description)
+                  << ("'") << (std::setw(8)) << (" category='") << (category)
+                  << ("'") << (std::setw(8)) << (" aggregation='")
+                  << (aggregation) << ("'") << (std::setw(8)) << (" minValue='")
+                  << (minValue) << ("'") << (std::setw(8)) << (" maxValue='")
+                  << (maxValue) << ("'") << (std::setw(8)) << (" units='")
+                  << (units) << ("'") << (std::setw(8))
+                  << (" isParentCounter='") << (isParentCounter) << ("'")
+                  << (std::endl) << (std::flush);
     };
     (p)++;
   };

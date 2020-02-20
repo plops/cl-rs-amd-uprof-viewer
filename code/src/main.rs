@@ -135,12 +135,22 @@ fn main() {
     {
         println!("{} {}:{} enable counters ", Utc::now(), file!(), line!());
     };
-    let n = unsafe {
-        GetSupportedCounters_num();
-    };
     {
-        println!("{} {}:{} supported counters ", Utc::now(), file!(), line!());
-    };
+        let n = unsafe {
+            GetSupportedCounters_num();
+        };
+        {
+            println!("{} {}:{} supported counters ", Utc::now(), file!(), line!());
+        };
+    }
+    {
+        let n = unsafe {
+            SetTimerSamplingPeriod(100);
+        };
+        {
+            println!("{} {}:{} period ", Utc::now(), file!(), line!());
+        };
+    }
     unsafe {
         StartProfiling();
     }

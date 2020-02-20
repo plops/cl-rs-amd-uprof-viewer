@@ -266,8 +266,12 @@ libc = \"*\"
 
 	       (let ((n0 (unsafe (EnableAllCounters))))
 		 ,(logprint "enable counters" `()))
-	       (let ((n (unsafe (GetSupportedCounters_num))))
-		 ,(logprint "supported counters" `()))
+	       (progn
+		 (let ((n (unsafe (GetSupportedCounters_num))))
+		   ,(logprint "supported counters" `())))
+	       (progn
+		 (let ((n (unsafe (SetTimerSamplingPeriod 100))))
+		  ,(logprint "period" `())))
 	       
 	       (unsafe "StartProfiling();")
 	       (let ((y (unsafe "ReadAllEnabledCounters()")))
