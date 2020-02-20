@@ -97,6 +97,12 @@ libc = \"*\"
 	     ;;"fn AMDTPwrProfileInitialize(mode:u64) -> u64;"
 	     ;;"fn _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(mode:u64) -> u64;"
 	     "fn ProfileInitialize_online() -> i64;"
+	     "fn StartProfiling() -> i64;"
+	     "fn StopProfiling() -> i64;"
+	     "fn ProfileClose() -> i64;"
+	     "fn EnableCounter(counter:i64) -> i64;"
+	     "fn SetTimerSamplingPeriod(interval_ms:i64) -> i64;"
+	     "fn ReadAllEnabledCounters() -> samples_pair_t;"
 	     ))
 
 
@@ -241,6 +247,7 @@ libc = \"*\"
 		   )
 	       ;(assert! (== x success))
 	       ,(logprint "init" `(x))
+	       (unsafe "StartProfiling()")
 	       )
 	     
 	     #+nil (let* ((client (request--Client--new))

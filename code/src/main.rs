@@ -14,6 +14,7 @@ use std::time::Instant;
 #[link(name = "amdpowerprof")]
 extern "C" {
     fn ProfileInitialize_online() -> i64;
+    fn StartProfiling() -> i64;
 }
 struct System {
     event_loop: EventLoop<()>,
@@ -109,7 +110,8 @@ fn main() {
     let x = unsafe { ProfileInitialize_online() };
     {
         println!("{} {}:{} init  x={}", Utc::now(), file!(), line!(), x);
-    };
+    }
+    unsafe { StartProfiling() };
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))

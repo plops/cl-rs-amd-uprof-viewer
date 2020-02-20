@@ -307,6 +307,7 @@
 				    (declare ,@(loop for (name type) in params collect
 						    `(type ,type ,name))
 					     (values ,ret-type))
+				    ,(logprint (format nil "~a" name) (loop for (name type) in params collect name))
 				    ,(if code
 					 code
 					 `(return (,name ,@(loop for (name type) in params collect name))))))))))
