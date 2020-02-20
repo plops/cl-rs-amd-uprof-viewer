@@ -89,6 +89,12 @@ libc = \"*\"
 	    "use std::time::Instant;")
 
 	   (do0
+	    "#[repr(C)]"
+	    (defstruct0 samples_pair_t
+		(result libc--c_int)
+	      (handle "*const std::ffi::c_void")))
+
+	   (do0
 	    "#[link(name=\"AMDPowerProfileAPI\")]"
 	    "#[link(name=\"amdpowerprof\")]"
 	    (extern
@@ -105,7 +111,8 @@ libc = \"*\"
 	     "fn ReadAllEnabledCounters() -> samples_pair_t;"
 	     ))
 
-
+	   
+	   
 	   (defstruct0 System
 	       (event_loop "EventLoop<()>")
 	     (display "glium::Display")
@@ -247,7 +254,9 @@ libc = \"*\"
 		   )
 	       ;(assert! (== x success))
 	       ,(logprint "init" `(x))
-	       (unsafe "StartProfiling()")
+	       (unsafe "StartProfiling();")
+	       (let ((y (unsafe "ReadAllEnabledCounters()")))
+		 ,(logprint "counters" `(y.result)))
 	       )
 	     
 	     #+nil (let* ((client (request--Client--new))

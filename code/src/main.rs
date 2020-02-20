@@ -10,11 +10,21 @@ use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, Ui};
 use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
+#[repr(C)]
+struct samples_pair_t {
+    result: libc::c_int,
+    handle: *const std::ffi::c_void,
+}
 #[link(name = "AMDPowerProfileAPI")]
 #[link(name = "amdpowerprof")]
 extern "C" {
     fn ProfileInitialize_online() -> i64;
     fn StartProfiling() -> i64;
+    fn StopProfiling() -> i64;
+    fn ProfileClose() -> i64;
+    fn EnableCounter(counter: i64) -> i64;
+    fn SetTimerSamplingPeriod(interval_ms: i64) -> i64;
+    fn ReadAllEnabledCounters() -> samples_pair_t;
 }
 struct System {
     event_loop: EventLoop<()>,
@@ -111,7 +121,19 @@ fn main() {
     {
         println!("{} {}:{} init  x={}", Utc::now(), file!(), line!(), x);
     }
-    unsafe { StartProfiling() };
+    unsafe {
+        StartProfiling();
+    }
+    let y = unsafe { ReadAllEnabledCounters() };
+    {
+        println!(
+            "{} {}:{} counters  y.result={}",
+            Utc::now(),
+            file!(),
+            line!(),
+            y.result
+        );
+    };
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))
