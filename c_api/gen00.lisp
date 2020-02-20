@@ -202,7 +202,7 @@
 					       collect
 						 (destructuring-bind (name type &optional err-value) var
 						   (declare (ignorable err-value))
-						   `(,type ,(format nil "GetPwrSample_~a" name) ((handle void*)
+						   `(,type ,(format nil "ReadAllEnabledCounters_PwrSample_~a" name) ((handle void*)
 												 (idx int))
 							   (do0
 							    
@@ -212,6 +212,52 @@
 							      
 							     
 							      (return (dot (aref samples idx)
+									   ,(format nil "m_~a" name))))))))
+
+					  ,@(loop for var in `((counterID int -1)
+							       (valueCnt int -1)
+							       )
+					       collect
+						 (destructuring-bind (name type &optional err-value) var
+						   (declare (ignorable err-value))
+						   `(,type ,(format nil "ReadAllEnabledCounters_counterValues_~a" name) ((handle void*)
+												 (idx int) (counter_idx int))
+							   (do0
+							    
+							    (let ((samples (reinterpret_cast<AMDTPwrSample*> handle)))
+
+							      (when (== nullptr
+									  (dot (aref samples idx)
+									       m_counterValues))
+								(return ,err-value))
+							      (unless (< counter_idx (dot (aref samples idx)
+											  m_numOfCounter))
+								(return ,err-value))
+							      
+							      (return (dot (aref samples idx)
+									   (aref m_counterValues counter_idx)
+									   ,(format nil "m_~a" name))))))))
+					  ,@(loop for var in `((data float NAN))
+					       collect
+						 (destructuring-bind (name type &optional err-value) var
+						   (declare (ignorable err-value))
+						   `(,type ,(format nil "ReadAllEnabledCounters_counterValues_~a" name) ((handle void*)
+												 (idx int) (counter_idx int) )
+							   (do0
+							    
+							    (let ((samples (reinterpret_cast<AMDTPwrSample*> handle)))
+
+							      (when (== nullptr
+									(dot (aref samples idx)
+									     m_counterValues))
+								(return ,err-value))
+							      (unless (< counter_idx (dot (aref samples idx)
+											  m_numOfCounter))
+								(return ,err-value))
+							      
+							      
+							      (return (dot (aref samples idx)
+									   (aref m_counterValues counter_idx)
 									  ,(format nil "m_~a" name))))))))
 					  
 					  (int GetSupportedCounters_num ()
