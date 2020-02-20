@@ -11,8 +11,9 @@ use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
 #[link(name = "AMDPowerProfileAPI")]
+#[link(name = "amdpowerprof")]
 extern "C" {
-    fn _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(mode: u64) -> u64;
+    fn ProfileInitialize_online() -> i64;
 }
 struct System {
     event_loop: EventLoop<()>,
@@ -105,11 +106,10 @@ impl System {
     }
 }
 fn main() {
-    let x = unsafe {
-        return _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(0);
+    let x = unsafe { ProfileInitialize_online() };
+    {
+        println!("{} {}:{} init  x={}", Utc::now(), file!(), line!(), x);
     };
-    let success = 0;
-    assert!((x) == (success));
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))

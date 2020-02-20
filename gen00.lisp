@@ -90,11 +90,14 @@ libc = \"*\"
 
 	   (do0
 	    "#[link(name=\"AMDPowerProfileAPI\")]"
+	    "#[link(name=\"amdpowerprof\")]"
 	    (extern
 	     ;; AMDTPwrProfileMode .. uint .. 0=online
 	     ;; AMDTResult .. uint
-	     ;"fn AMDTPwrProfileInitialize(mode:u64) -> u64;"
-	     "fn _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(mode:u64) -> u64;"))
+	     ;;"fn AMDTPwrProfileInitialize(mode:u64) -> u64;"
+	     ;;"fn _Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode(mode:u64) -> u64;"
+	     "fn ProfileInitialize_online() -> i64;"
+	     ))
 
 
 	   (defstruct0 System
@@ -228,13 +231,16 @@ libc = \"*\"
 							  &event)))))))))))
 	   
 	   (defun main ()
-	     (let ((x (unsafe (return (_Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode 0))
+	     (let ((x (unsafe ; (_Z24AMDTPwrProfileInitialize18AMDTPwrProfileMode 0)
+					;(ProfileInitialize_online)
+		       "ProfileInitialize_online()"
+		       
 					; (AMDTPwrProfileInitialize 0)
 			      ))
-		   (success 0)
+		;   (success 0)
 		   )
-	       (assert! (== x success))
-	       ;,(logprint "init" `((x.display)))
+	       ;(assert! (== x success))
+	       ,(logprint "init" `(x))
 	       )
 	     
 	     #+nil (let* ((client (request--Client--new))
