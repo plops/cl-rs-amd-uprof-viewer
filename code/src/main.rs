@@ -155,17 +155,19 @@ fn main() {
     unsafe {
         StartProfiling();
     }
-    thread::sleep(time::Duration::from_millis(1000));
-    let y = unsafe { ReadAllEnabledCounters() };
-    {
-        println!(
-            "{} {}:{} counters  y.result={}",
-            Utc::now(),
-            file!(),
-            line!(),
-            y.result
-        );
-    };
+    loop {
+        thread::sleep(time::Duration::from_millis(1000));
+        let y = unsafe { ReadAllEnabledCounters() };
+        {
+            println!(
+                "{} {}:{} counters  y.result={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                y.result
+            );
+        };
+    }
     let system = init(file!());
     system.main_loop(move |_, ui| {
         Window::new(im_str!("Hello world"))

@@ -275,10 +275,12 @@ libc = \"*\"
 	       
 	       (unsafe "StartProfiling();")
 
-	       (thread--sleep (time--Duration--from_millis 1000))
 	       
-	       (let ((y (unsafe "ReadAllEnabledCounters()")))
-		 ,(logprint "counters" `(y.result)))
+
+	       (loop
+		  (thread--sleep (time--Duration--from_millis 1000))
+		(let ((y (unsafe "ReadAllEnabledCounters()")))
+		  ,(logprint "counters" `(y.result))))
 	       )
 	     
 	     #+nil (let* ((client (request--Client--new))

@@ -313,11 +313,13 @@
 							   `(do0
 							     (let (,@(loop for e in l collect
 									  (destructuring-bind (name &rest rest) e
+									    (declare (ignorable rest))
 									    `(,name (-> p ,(format nil "m_~a" name)))))
 
 								   )
 							       ,(logprint "" `(,@(loop for e in l collect
 										      (destructuring-bind (name &rest rest) e
+											 (declare (ignorable rest))
 											name))))))))
 						     (incf p)))
 						  (return n))))
