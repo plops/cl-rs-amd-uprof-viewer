@@ -182,19 +182,37 @@
 					  (samples_pair_t ReadAllEnabledCounters ()
 					       (do0
 						(let ((n 0)
-						      (desc nullptr)
+						      (samples nullptr)
 						      (pair (curly -1 nullptr))
-						      (res (AMDTPwrReadAllEnabledCounters &n &desc)))
+						      (res (AMDTPwrReadAllEnabledCounters &n &samples)))
 						  (declare (type AMDTUInt32 n)
-							   (type AMDTPwrSample* desc)
+							   (type AMDTPwrSample* samples)
 							   (type samples_pair_t pair))
 						  (do0
 						   (unless (== AMDT_STATUS_OK res)
 						     (return pair)))
 						  (setf pair.result n
-							pair.handle (reinterpret_cast<void*> desc))
+							pair.handle (reinterpret_cast<void*> samples))
 						  (return pair))))
+					  
 
+					  ,@(loop for var in `((elapsedTimeMs int -1) ;; fixme this is uint64
+							       (recordId uint 1000000)
+							       (numOfCounter int -1))
+					       collect
+						 (destructuring-bind (name type &optional err-value) var
+						   (declare (ignorable err-value))
+						   `(,type ,(format nil "GetPwrSample_~a" name) ((handle void*)
+												 (idx int))
+							   (do0
+							    
+							    (let ((samples (reinterpret_cast<AMDTPwrSample*> handle))
+								  )
+							      
+							      
+							     
+							      (return (dot (aref samples idx)
+									  ,(format nil "m_~a" name))))))))
 					  
 					  (int GetSupportedCounters_num ()
 					       (do0
@@ -221,6 +239,7 @@
 							     (isParentCounter int -1))
 					       collect
 						 (destructuring-bind (name type &optional err-value) var
+						   (declare (ignorable err-value))
 						   `(,type ,(format nil "GetCounterDesc_~a" name) ((idx int))
 							   (do0
 							    

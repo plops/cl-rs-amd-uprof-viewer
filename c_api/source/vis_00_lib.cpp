@@ -31,15 +31,27 @@ int StopProfiling() { return AMDTPwrStopProfiling(); }
 int ProfileClose() { return AMDTPwrProfileClose(); }
 samples_pair_t ReadAllEnabledCounters() {
   AMDTUInt32 n = 0;
-  AMDTPwrSample *desc = nullptr;
+  AMDTPwrSample *samples = nullptr;
   samples_pair_t pair = {-1, nullptr};
-  auto res = AMDTPwrReadAllEnabledCounters(&n, &desc);
+  auto res = AMDTPwrReadAllEnabledCounters(&n, &samples);
   if (!((AMDT_STATUS_OK) == (res))) {
     return pair;
   };
   pair.result = n;
-  pair.handle = reinterpret_cast<void *>(desc);
+  pair.handle = reinterpret_cast<void *>(samples);
   return pair;
+}
+int GetPwrSample_elapsedTimeMs(void *handle, int idx) {
+  auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
+  return samples[idx].m_elapsedTimeMs;
+}
+uint GetPwrSample_recordId(void *handle, int idx) {
+  auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
+  return samples[idx].m_recordId;
+}
+int GetPwrSample_numOfCounter(void *handle, int idx) {
+  auto samples = reinterpret_cast<AMDTPwrSample *>(handle);
+  return samples[idx].m_numOfCounter;
 }
 int GetSupportedCounters_num() {
   AMDTUInt32 n = 0;
