@@ -278,7 +278,7 @@ libc = \"*\"
 	       
 
 	       (loop
-		  (thread--sleep (time--Duration--from_millis 1000))
+		  (thread--sleep (time--Duration--from_millis 100))
 		(let ((y (unsafe "ReadAllEnabledCounters()")))
 		  ,(logprint "counters" `(y.result))))
 	       )
