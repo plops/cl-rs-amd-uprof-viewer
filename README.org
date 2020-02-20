@@ -1,5 +1,7 @@
 * Installation
 
+** Alternative 1) AMD uprof
+
 - https://developer.amd.com/amd-uprof/
 - install module: sudo sh AMDuProf_Linux_x64_3.2.228/bin/AMDPowerProfilerDriver.sh
 - /dev/AMDPowerProfiler
@@ -14,3 +16,8 @@
 
 - https://www.reddit.com/r/rust/comments/4yz59h/cc_interop/
 - exceptions could be very bad, not sure if amd uses them
+
+** Alternative 2) Zenpower or k10temp module
+
+- https://github.com/ocerman/zenpower
+- https://lore.kernel.org/lkml/20200116141800.9828-1-linux@roeck-us.net/
