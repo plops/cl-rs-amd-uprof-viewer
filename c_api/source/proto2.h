@@ -12,6 +12,7 @@ int ReadAllEnabledCounters_counterValues_counterID (void* handle, int idx, int c
 int ReadAllEnabledCounters_counterValues_valueCnt (void* handle, int idx, int counter_idx);
 float ReadAllEnabledCounters_counterValues_data (void* handle, int idx, int counter_idx);
 int GetSupportedCounters_num ();
+int EnableAllCounters ();
 int GetCounterDesc_counterID (int idx);
 int GetCounterDesc_deviceId (int idx);
 int GetCounterDesc_devType (int idx);

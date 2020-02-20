@@ -23,6 +23,7 @@ extern "C" {
     fn StopProfiling() -> i64;
     fn ProfileClose() -> i64;
     fn EnableCounter(counter: i64) -> i64;
+    fn EnableAllCounters() -> i64;
     fn SetTimerSamplingPeriod(interval_ms: i64) -> i64;
     fn ReadAllEnabledCounters() -> samples_pair_t;
     fn GetSupportedCounters_num() -> i64;
@@ -128,6 +129,12 @@ fn main() {
     {
         println!("{} {}:{} init  x={}", Utc::now(), file!(), line!(), x);
     }
+    let n0 = unsafe {
+        EnableAllCounters();
+    };
+    {
+        println!("{} {}:{} enable counters ", Utc::now(), file!(), line!());
+    };
     let n = unsafe {
         GetSupportedCounters_num();
     };

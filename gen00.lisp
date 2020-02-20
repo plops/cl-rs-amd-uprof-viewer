@@ -107,6 +107,7 @@ libc = \"*\"
 	     "fn StopProfiling() -> i64;"
 	     "fn ProfileClose() -> i64;"
 	     "fn EnableCounter(counter:i64) -> i64;"
+	     "fn EnableAllCounters() -> i64;"
 	     "fn SetTimerSamplingPeriod(interval_ms:i64) -> i64;"
 	     "fn ReadAllEnabledCounters() -> samples_pair_t;"
 	     "fn GetSupportedCounters_num() -> i64;"
@@ -261,8 +262,10 @@ libc = \"*\"
 		   )
 	       ;(assert! (== x success))
 	       ,(logprint "init" `(x))
+	       
 
-
+	       (let ((n0 (unsafe (EnableAllCounters))))
+		 ,(logprint "enable counters" `()))
 	       (let ((n (unsafe (GetSupportedCounters_num))))
 		 ,(logprint "supported counters" `()))
 	       

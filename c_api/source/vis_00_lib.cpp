@@ -323,6 +323,69 @@ int GetSupportedCounters_num() {
       << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
       << (std::setw(8)) << (" n='") << (n) << ("'") << (std::setw(8))
       << (" desc='") << (desc) << ("'") << (std::endl) << (std::flush);
+  auto p = desc;
+  for (int i = 0; i < n; (i) += (1)) {
+    if (!((nullptr) == (p))) {
+      ;
+    };
+    (p)++;
+  };
+  return n;
+}
+int EnableAllCounters() {
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ")
+      << ("AMDTPwrEnableAllCounters") << (" ") << (std::endl) << (std::flush);
+  AMDTUInt32 n = 0;
+  AMDTPwrCounterDesc *desc = nullptr;
+  auto res = AMDTPwrGetSupportedCounters(&n, &desc);
+  if (!((AMDT_STATUS_OK) == (res))) {
+
+    (std::cout) << (std::setw(10))
+                << (std::chrono::high_resolution_clock::now()
+                        .time_since_epoch()
+                        .count())
+                << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__)
+                << (":") << (__LINE__) << (" ") << (__func__) << (" ")
+                << ("fail") << (" ") << (std::setw(8)) << (" res='") << (res)
+                << ("'") << (std::endl) << (std::flush);
+    return -1;
+  };
+
+  (std::cout)
+      << (std::setw(10))
+      << (std::chrono::high_resolution_clock::now().time_since_epoch().count())
+      << (" ") << (std::this_thread::get_id()) << (" ") << (__FILE__) << (":")
+      << (__LINE__) << (" ") << (__func__) << (" ") << ("") << (" ")
+      << (std::setw(8)) << (" n='") << (n) << ("'") << (std::setw(8))
+      << (" desc='") << (desc) << ("'") << (std::endl) << (std::flush);
+  auto p = desc;
+  for (int i = 0; i < n; (i) += (1)) {
+    if (!((nullptr) == (p))) {
+      auto res = AMDTPwrEnableCounter(p->m_counterID);
+      if (!((AMDT_STATUS_OK) == (res))) {
+
+        (std::cout) << (std::setw(10))
+                    << (std::chrono::high_resolution_clock::now()
+                            .time_since_epoch()
+                            .count())
+                    << (" ") << (std::this_thread::get_id()) << (" ")
+                    << (__FILE__) << (":") << (__LINE__) << (" ") << (__func__)
+                    << (" ") << ("fail enable") << (" ") << (std::setw(8))
+                    << (" res='") << (res) << ("'") << (std::setw(8))
+                    << (" i='") << (i) << ("'") << (std::setw(8))
+                    << (" p->m_counterID='") << (p->m_counterID) << ("'")
+                    << (std::setw(8)) << (" n='") << (n) << ("'")
+                    << (std::setw(8)) << (" desc='") << (desc) << ("'")
+                    << (std::endl) << (std::flush);
+      };
+    };
+    (p)++;
+  };
   return n;
 }
 int GetCounterDesc_counterID(int idx) {
