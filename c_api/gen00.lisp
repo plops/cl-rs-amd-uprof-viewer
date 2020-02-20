@@ -167,17 +167,72 @@
 	      (space "extern \"C\" "
 		     
 		     (progn
+		       (defstruct0 samples_pair_t
+			 (result int)
+		       (handle void*))
 		       ,@(loop for e in `((int ProfileInitialize ((mode int)))
+					  (int EnableCounter ((counter int)))
+					  (int SetTimerSamplingPeriod ((interval_ms int)))
+					  (int StartProfiling ())
+					  (int StopProfiling ())
+					  (int ProfileClose ())
+					  (samples_pair_t ReadAllEnabledCounters ()
+					       (do0
+						(let ((n 0)
+						      (desc nullptr)
+						      (pair (curly -1 nullptr))
+						      (res (AMDTPwrReadAllEnabledCounters &n &desc)))
+						  (declare (type AMDTUInt32 n)
+							   (type AMDTPwrCounterDesc* desc)
+							   (type samples_pair_t pair))
+						  (do0
+						   (unless (== AMDT_STATUS_OK res)
+						     (return (space
+							      samples_pair_t (curly
+									      -1
+									      pair)))))
+						  (setf pair.result n
+							pair.handle (reinterpret_cast<void*> desc))
+						  (return pair))))
 					  (int GetSupportedCounters_num ()
 					       (do0
 						(let ((n 0)
 						      (desc nullptr)
-						      (res (GetSupportedCounters &n &desc)))
+						      (res (AMDTPwrGetSupportedCounters &n &desc)))
 						  (declare (type AMDTUInt32 n)
 							   (type AMDTPwrCounterDesc* desc))
-						  (unless (== AMDT_STATUS_OK res)
-						    (return -1))
-						  (return n)))))
+						  (do0
+						   (unless (== AMDT_STATUS_OK res)
+						     (return -1)))
+						  (return n))))
+					  ,@(loop for var in `((counterID int -1)
+							     (deviceID int -1)
+							     (devType int -1)
+							     (devInstanceID int -1)
+							     (name char* nullptr)
+							     (description char* nullptr)
+							     (category int -1)
+							     (aggregation int -1)
+							     (minValue double NAN)
+							     (maxValue double NAN)
+							     (units int -1)
+							     (isParentCounter int -1))
+					       collect
+						 (destructuring-bind (name type &optional err-value) var
+						   `(,type ,(format nil "GetCounterDesc_~a" name) ((idx int))
+							   (do0
+							    
+							    (let ((n 0)
+								  (desc nullptr)
+								  (res (AMDTPwrGetSupportedCounters &n &desc)))
+							      (declare (type AMDTUInt32 n)
+								       (type AMDTPwrCounterDesc* desc))
+							      (unless (== AMDT_STATUS_OK res)
+								(return ,err-value))
+							      (unless (< idx n)
+								(return ,err-value))
+							      (return (-> (aref desc idx)
+									  ,(format nil "m_~a" name)))))))))
 			    collect
 			      (destructuring-bind (ret-type base params &optional code) e
 			       (let ((name (format nil "AMDTPwr~a" base)))
