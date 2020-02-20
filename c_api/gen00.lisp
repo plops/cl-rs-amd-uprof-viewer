@@ -130,7 +130,7 @@
 		  " "
 		  (include "globals.h")
 		  " "
-		  (include "proto2.h")
+		  ;(include "proto2.h")
 		  " ")
 		header)
 	  (unless (cl-ppcre:scan "main" (string-downcase (format nil "~a" module-name)))
@@ -152,7 +152,6 @@
       `(lib ()
 	     (do0
 	      (include <AMDTPowerProfileApi.h>
-		       <iostream.h>
 		       <chrono>
 		       <cstdio>
 		       <cassert>
@@ -170,7 +169,11 @@
 		       (defstruct0 samples_pair_t
 			 (result int)
 		       (handle void*))
-		       ,@(loop for e in `((int ProfileInitialize ((mode int)))
+		       ,@(loop for e in `((int ProfileInitialize_online (;(mode int)
+								  )
+					       (do0
+						(let ((mode_ AMDT_PWR_MODE_TIMELINE_ONLINE))
+						 (return (AMDTPwrProfileInitialize mode_)))))
 					  (int EnableCounter ((counter int)))
 					  (int SetTimerSamplingPeriod ((interval_ms int)))
 					  (int StartProfiling ())
@@ -183,17 +186,16 @@
 						      (pair (curly -1 nullptr))
 						      (res (AMDTPwrReadAllEnabledCounters &n &desc)))
 						  (declare (type AMDTUInt32 n)
-							   (type AMDTPwrCounterDesc* desc)
+							   (type AMDTPwrSample* desc)
 							   (type samples_pair_t pair))
 						  (do0
 						   (unless (== AMDT_STATUS_OK res)
-						     (return (space
-							      samples_pair_t (curly
-									      -1
-									      pair)))))
+						     (return pair)))
 						  (setf pair.result n
 							pair.handle (reinterpret_cast<void*> desc))
 						  (return pair))))
+
+					  
 					  (int GetSupportedCounters_num ()
 					       (do0
 						(let ((n 0)
@@ -206,9 +208,9 @@
 						     (return -1)))
 						  (return n))))
 					  ,@(loop for var in `((counterID int -1)
-							     (deviceID int -1)
+							     (deviceId int -1)
 							     (devType int -1)
-							     (devInstanceID int -1)
+							     (devInstanceId int -1)
 							     (name char* nullptr)
 							     (description char* nullptr)
 							     (category int -1)
@@ -231,7 +233,7 @@
 								(return ,err-value))
 							      (unless (< idx n)
 								(return ,err-value))
-							      (return (-> (aref desc idx)
+							      (return (dot (aref desc idx)
 									  ,(format nil "m_~a" name)))))))))
 			    collect
 			      (destructuring-bind (ret-type base params &optional code) e

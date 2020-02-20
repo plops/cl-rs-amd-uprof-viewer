@@ -3,7 +3,6 @@
 
 #include "globals.h"
 
-#include "proto2.h"
 ;
 extern State state;
 #include <AMDTPowerProfileApi.h>
@@ -11,7 +10,6 @@ extern State state;
 #include <chrono>
 #include <cstdio>
 #include <fstream>
-#include <iostream.h>
 #include <string>
 using namespace std::chrono_literals;
 extern "C" {
@@ -20,7 +18,10 @@ struct samples_pair_t {
   void *handle;
 };
 typedef struct samples_pair_t samples_pair_t;
-int ProfileInitialize(int mode) { return AMDTPwrProfileInitialize(mode); }
+int ProfileInitialize_online() {
+  auto mode_ = AMDT_PWR_MODE_TIMELINE_ONLINE;
+  return AMDTPwrProfileInitialize(mode_);
+}
 int EnableCounter(int counter) { return AMDTPwrEnableCounter(counter); }
 int SetTimerSamplingPeriod(int interval_ms) {
   return AMDTPwrSetTimerSamplingPeriod(interval_ms);
@@ -30,11 +31,11 @@ int StopProfiling() { return AMDTPwrStopProfiling(); }
 int ProfileClose() { return AMDTPwrProfileClose(); }
 samples_pair_t ReadAllEnabledCounters() {
   AMDTUInt32 n = 0;
-  AMDTPwrCounterDesc *desc = nullptr;
+  AMDTPwrSample *desc = nullptr;
   samples_pair_t pair = {-1, nullptr};
   auto res = AMDTPwrReadAllEnabledCounters(&n, &desc);
   if (!((AMDT_STATUS_OK) == (res))) {
-    return samples_pair_t{-1, pair};
+    return pair;
   };
   pair.result = n;
   pair.handle = reinterpret_cast<void *>(desc);
@@ -59,9 +60,9 @@ int GetCounterDesc_counterID(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_counterID;
+  return desc[idx].m_counterID;
 }
-int GetCounterDesc_deviceID(int idx) {
+int GetCounterDesc_deviceId(int idx) {
   AMDTUInt32 n = 0;
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
@@ -71,7 +72,7 @@ int GetCounterDesc_deviceID(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_deviceID;
+  return desc[idx].m_deviceId;
 }
 int GetCounterDesc_devType(int idx) {
   AMDTUInt32 n = 0;
@@ -83,9 +84,9 @@ int GetCounterDesc_devType(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_devType;
+  return desc[idx].m_devType;
 }
-int GetCounterDesc_devInstanceID(int idx) {
+int GetCounterDesc_devInstanceId(int idx) {
   AMDTUInt32 n = 0;
   AMDTPwrCounterDesc *desc = nullptr;
   auto res = AMDTPwrGetSupportedCounters(&n, &desc);
@@ -95,7 +96,7 @@ int GetCounterDesc_devInstanceID(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_devInstanceID;
+  return desc[idx].m_devInstanceId;
 }
 char *GetCounterDesc_name(int idx) {
   AMDTUInt32 n = 0;
@@ -107,7 +108,7 @@ char *GetCounterDesc_name(int idx) {
   if (!(idx < n)) {
     return nullptr;
   };
-  return desc[idx]->m_name;
+  return desc[idx].m_name;
 }
 char *GetCounterDesc_description(int idx) {
   AMDTUInt32 n = 0;
@@ -119,7 +120,7 @@ char *GetCounterDesc_description(int idx) {
   if (!(idx < n)) {
     return nullptr;
   };
-  return desc[idx]->m_description;
+  return desc[idx].m_description;
 }
 int GetCounterDesc_category(int idx) {
   AMDTUInt32 n = 0;
@@ -131,7 +132,7 @@ int GetCounterDesc_category(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_category;
+  return desc[idx].m_category;
 }
 int GetCounterDesc_aggregation(int idx) {
   AMDTUInt32 n = 0;
@@ -143,7 +144,7 @@ int GetCounterDesc_aggregation(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_aggregation;
+  return desc[idx].m_aggregation;
 }
 double GetCounterDesc_minValue(int idx) {
   AMDTUInt32 n = 0;
@@ -155,7 +156,7 @@ double GetCounterDesc_minValue(int idx) {
   if (!(idx < n)) {
     return NAN;
   };
-  return desc[idx]->m_minValue;
+  return desc[idx].m_minValue;
 }
 double GetCounterDesc_maxValue(int idx) {
   AMDTUInt32 n = 0;
@@ -167,7 +168,7 @@ double GetCounterDesc_maxValue(int idx) {
   if (!(idx < n)) {
     return NAN;
   };
-  return desc[idx]->m_maxValue;
+  return desc[idx].m_maxValue;
 }
 int GetCounterDesc_units(int idx) {
   AMDTUInt32 n = 0;
@@ -179,7 +180,7 @@ int GetCounterDesc_units(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_units;
+  return desc[idx].m_units;
 }
 int GetCounterDesc_isParentCounter(int idx) {
   AMDTUInt32 n = 0;
@@ -191,6 +192,6 @@ int GetCounterDesc_isParentCounter(int idx) {
   if (!(idx < n)) {
     return -1;
   };
-  return desc[idx]->m_isParentCounter;
+  return desc[idx].m_isParentCounter;
 }
 };

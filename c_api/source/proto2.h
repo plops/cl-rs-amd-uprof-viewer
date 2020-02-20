@@ -1,4 +1,4 @@
-int ProfileInitialize (int mode);
+int ProfileInitialize_online ();
 int EnableCounter (int counter);
 int SetTimerSamplingPeriod (int interval_ms);
 int StartProfiling ();
@@ -7,9 +7,9 @@ int ProfileClose ();
 samples_pair_t ReadAllEnabledCounters ();
 int GetSupportedCounters_num ();
 int GetCounterDesc_counterID (int idx);
-int GetCounterDesc_deviceID (int idx);
+int GetCounterDesc_deviceId (int idx);
 int GetCounterDesc_devType (int idx);
-int GetCounterDesc_devInstanceID (int idx);
+int GetCounterDesc_devInstanceId (int idx);
 char* GetCounterDesc_name (int idx);
 char* GetCounterDesc_description (int idx);
 int GetCounterDesc_category (int idx);
