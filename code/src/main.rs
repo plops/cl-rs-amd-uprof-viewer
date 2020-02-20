@@ -10,6 +10,7 @@ use imgui::{Context, FontConfig, FontGlyphRanges, FontSource, Ui};
 use imgui_glium_renderer::Renderer;
 use imgui_winit_support::{HiDpiMode, WinitPlatform};
 use std::time::Instant;
+use std::{thread, time};
 #[repr(C)]
 struct samples_pair_t {
     result: libc::c_int,
@@ -154,6 +155,7 @@ fn main() {
     unsafe {
         StartProfiling();
     }
+    thread::sleep(time::Duration::from_millis(1000));
     let y = unsafe { ReadAllEnabledCounters() };
     {
         println!(

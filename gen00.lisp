@@ -87,7 +87,7 @@ libc = \"*\"
 	    "use imgui_glium_renderer::Renderer;"
 	    "use imgui_winit_support::{HiDpiMode,WinitPlatform};"
 	    "use std::time::Instant;")
-
+	   (use (std (curly thread time)))
 	   (do0
 	    "#[repr(C)]"
 	    (defstruct0 samples_pair_t
@@ -274,6 +274,9 @@ libc = \"*\"
 		  ,(logprint "period" `())))
 	       
 	       (unsafe "StartProfiling();")
+
+	       (thread--sleep (time--Duration--from_millis 1000))
+	       
 	       (let ((y (unsafe "ReadAllEnabledCounters()")))
 		 ,(logprint "counters" `(y.result)))
 	       )
