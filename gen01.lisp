@@ -64,7 +64,7 @@ positioned-io = \"*\"
 	 `(do0
 	   (do0
 
-					
+	    (use (std io))
 	    
 	    (use
 	     (chrono (curly DateTime Utc)))
@@ -221,12 +221,39 @@ positioned-io = \"*\"
 							  &event)))))))))))
 	   (defun parse ("data: &[u8]")
 	     (declare (values u64))
-	     (dot data
-		  (iter)
-		  (fold 0
-			(lambda (a b)
-			  (return (coerce (+ (* 10 a)
-					     (- b (byde 0))) u64))))))
+	     (return 
+	      (dot data
+		   (iter)
+		   (fold 0
+			 (lambda (a b)
+			   (return (+ (* 10 a)
+				      (coerce (- b (byte 0))
+					      u64))))))))
+
+	   (defun read_int ("data: &[u8]")
+	     (declare (values ; "Result<Vec<u64>, MyError>"
+		       "io::Result<u64>"
+		       ))
+	     ;; https://users.rust-lang.org/t/reading-integers-from-a-file-into-vector/17517/3
+	     (let* ((res 0))
+	      (do0			;let* ((j 0))
+	       (for ((values i byte) (dot data
+					  (iter)
+					  (enumerate)))
+		    (case byte
+		      ((byte "\\n")
+		       (setf res (parse (ref (aref data "0..i"))))
+		        ;; j..i
+					;(setf j (+ i 1))
+		       )
+		      ("b'0'..=b'9'"
+		       "()")
+					;(_ (return (? (Err MyError))))
+		      (_ (? (Err (io--Error--new
+				  io--ErrorKind--Other
+				  (string "int reader fail")))))))
+	       (return (Ok res))))
+	     )
 	   (defun main ()
 	     
 	     ,(let ((files (directory #P"/sys/class/hwmon/hwmon0/*input")))
@@ -244,21 +271,18 @@ positioned-io = \"*\"
 							    (unwrap)))))
 		    (loop
 		       (let* (,@(loop for f in files and i from 0 collect
-				     `(,(format nil "buf~a" i))))
+				     `(,(format nil "buf~a" i) "[0; 512]")))
 			 (declare (type (array u8 512) ,@(loop for f in files and i from 0 collect
 							     (format nil "buf~a" i))))
 			 (let (,@(loop for f in files and i from 0 collect
-				      `(,(format nil "bytes~a" i) (dot ,(format nil "f~a" i) (read_at 0 ,(format nil "&mut buf~a" i))))))
-			   ;; https://users.rust-lang.org/t/reading-integers-from-a-file-into-vector/17517/3
-			   (for ((values i byte) (dot buf0
-						      (iter)
-						      (enumerate)))
-				(match byte
-				  ((byte "\\n") (parse ))
-				  ))
-			   ,(logprint "" (loop for f in files and i from 0 collect
-					      (format nil "buf~a" i)
-						   ))))))
+				      `(,(format nil "_bytes~a" i) (dot ,(format nil "f~a" i) (read_at 0 ,(format nil "&mut buf~a" i))))))
+			   (let (,@(loop for f in files and i from 0 collect
+					`(,(format nil "v~a" i) (dot (read_int ,(format nil "&mut buf~a" i))
+								     (expect (string "read_int error"))))))
+			   
+			    ,(logprint "" (loop for f in files and i from 0 collect
+					       (format nil "v~a" i)
+					       )))))))
 		  
 		  ,@(loop for f in files collect
 			  `(progn
