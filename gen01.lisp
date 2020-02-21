@@ -86,7 +86,8 @@ positioned-io = \"*\"
 		(std time Instant)
 		(positioned_io ReadAt)
 		)
-	  
+
+	   (use (crossbeam_channel bounded))
 	   
 
 	   
@@ -266,57 +267,48 @@ positioned-io = \"*\"
 	       (return (Ok res))))
 	     )
 	   (defun main ()
-	     
-	     ,(let ((files (let* ((dir #P"/sys/class/hwmon/hwmon0/")
-				  (paths (directory (merge-pathnames "*input" dir)))
-				  )
-			     (loop for path in paths collect
-				  (let* ((prefix (elt (cl-ppcre:split "_"
-								      (pathname-name path))
-						      0))
-					 (label-file (merge-pathnames (format nil "~a_label" prefix)
-								      dir)))
-				    (list (with-open-file (s label-file)
-					    (read s))
-					  path))))
-		      ;(directory #P"/sys/class/hwmon/hwmon0/*input")
-		      )
-		    )
-		`(do0
-		  #+nil
-		  (loop
-		     ,@(loop for f in files collect
-			  `(progn
-			     (let ((contents (dot (fs--read_to_string (string ,f))
-						  (expect (string "read error")))))
-			       ,(logprint f `(contents))))))
 
-		  (let (,@(loop for (name f) in files and i from 0 collect
-			       `(,(format nil "f_~a" name) (dot (File--open (string ,f))
-							    (unwrap)))))
-		    (loop
-		       (let* (,@(loop for (name f) in files and i from 0 collect
-				     `(,(format nil "buf_~a" name) "[0; 32]")))
-			 #+nil (declare (type (array u8 32) ,@(loop for f in files and i from 0 collect
-							     (format nil "buf~a" i))))
-			 (let (,@(loop for (name f) in files and i from 0 collect
-				      `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
-									(read_at 0 ,(format nil "&mut buf_~a" name))
-									(expect (string ,(format nil "read_at ~a fail" name)))))))
-			   ;,(logprint "read" (loop for f in files and i from 0 collect (format nil "_bytes~a" i)))
-			   (let (,@(loop for (name f) in files and i from 0 collect
-					`(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
-								     (expect (string ,(format nil "read_int ~a error" name)))))))
-			   
-			    ,(logprint "" (loop for (name f) in files and i from 0 collect
-					       (format nil "v_~a" name))))))))
-		  
-		  ,@(loop for f in files collect
-			  `(progn
-			     (let ((contents (dot (fs--read_to_string (string ,f))
-						  (expect (string "read error")))))
-			       ,(logprint f `(contents)))))
-		  ))
+	     (let (((values s r) (bounded 0)))
+	       (thread--spawn
+		(space
+		 move
+		 (lambda ()
+		   ,(let ((files (let* ((dir #P"/sys/class/hwmon/hwmon0/")
+					(paths (directory (merge-pathnames "*input" dir)))
+					)
+				   (loop for path in paths collect
+					(let* ((prefix (elt (cl-ppcre:split "_"
+									    (pathname-name path))
+							    0))
+					       (label-file (merge-pathnames (format nil "~a_label" prefix)
+									    dir)))
+					  (list (with-open-file (s label-file)
+						  (read s))
+						path))))))
+		      `(do0
+			(let (,@(loop for (name f) in files and i from 0 collect
+				     `(,(format nil "f_~a" name) (dot (File--open (string ,f))
+								      (unwrap)))))
+			  (loop
+			     (let* (,@(loop for (name f) in files and i from 0 collect
+					   `(,(format nil "buf_~a" name) "[0; 32]")))
+			       (let (,@(loop for (name f) in files and i from 0 collect
+					    `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
+										  (read_at 0 ,(format nil "&mut buf_~a" name))
+										  (expect (string ,(format nil "read_at ~a fail" name)))))))
+				 (let (,@(loop for (name f) in files and i from 0 collect
+					      `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
+									       (expect (string ,(format nil "read_int ~a error" name)))))))
+				    ,(logprint "" (loop for (name f) in files and i from 0 collect
+							    (format nil "v_~a" name)))
+				   (dot s
+					(send
+					 (values (Utc--now)
+						 ,@(loop for (name f) in files and i from 0 collect
+						      (format nil "v_~a" name))))
+					(unwrap)))))))))))))
+	     
+	     
 	     
 	     #+nil (let* ((client (request--Client--new))
 		    (body (dot client
@@ -343,7 +335,15 @@ positioned-io = \"*\"
 						   (string "mouse: ({:.1},{:.1})"
 							   )
 						   (aref mouse_pos 0)
-						   (aref mouse_pos 1)))))))
+						   (aref mouse_pos 1)))
+					 (let ((tup (dot r
+							 (recv)
+							 (unwrap)))
+					       ;(a tup.0)
+					       )
+					   ,(logprint "" `(tup.0
+							   #+nil (? tup ;(aref tup 0)
+							      ) )))))))
 			 (dot ("Window::new" (im_str! (string "recv")))
 			      (size (list 200.0 100.0)
 				    "Condition::FirstUseEver")
