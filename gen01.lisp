@@ -226,7 +226,7 @@ positioned-io = \"*\"
 		   (iter)
 		   (fold 0
 			 (lambda (a b)
-			   ,(logprint "parse" `(a b (- b (byte 0))))
+			   ;,(logprint "parse" `(a b (- b (byte 0))))
 			   (return (+ (* 10 a)
 				      (coerce (- b (byte 0))
 					      u64))))))))
@@ -241,10 +241,10 @@ positioned-io = \"*\"
 	       (for ((values i byte) (dot data
 					  (iter)
 					  (enumerate)))
-		    ,(logprint "parse" `(i byte))
+		    ;,(logprint "parse" `(i byte))
 		    (case byte
 		      ((byte "\\n")
-		       ,(logprint "parse newline" `(i byte))
+		       ;,(logprint "parse newline" `(i byte))
 		       (setf res (parse (ref (aref data "0..i"))))
 		       (return (Ok res))
 		        ;; j..i
@@ -281,14 +281,14 @@ positioned-io = \"*\"
 							    (unwrap)))))
 		    (loop
 		       (let* (,@(loop for f in files and i from 0 collect
-				     `(,(format nil "buf~a" i) "[0; 512]")))
-			 (declare (type (array u8 512) ,@(loop for f in files and i from 0 collect
+				     `(,(format nil "buf~a" i) "[0; 32]")))
+			 (declare (type (array u8 32) ,@(loop for f in files and i from 0 collect
 							     (format nil "buf~a" i))))
 			 (let (,@(loop for f in files and i from 0 collect
 				      `(,(format nil "_bytes~a" i) (dot ,(format nil "f~a" i)
 									(read_at 0 ,(format nil "&mut buf~a" i))
 									(expect (string "read_at fail"))))))
-			   ,(logprint "read" (loop for f in files and i from 0 collect (format nil "_bytes~a" i)))
+			   ;,(logprint "read" (loop for f in files and i from 0 collect (format nil "_bytes~a" i)))
 			   (let (,@(loop for f in files and i from 0 collect
 					`(,(format nil "v~a" i) (dot (read_int ,(format nil "&mut buf~a" i))
 								     (expect (string "read_int error"))))))
