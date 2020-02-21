@@ -1,5 +1,6 @@
 (eval-when (:compile-toplevel :execute :load-toplevel)
-  (ql:quickload "cl-rust-generator"))
+  (ql:quickload "cl-rust-generator")
+  (ql:quickload "cl-ppcre"))
 
 (in-package :cl-rust-generator)
 
@@ -266,7 +267,21 @@ positioned-io = \"*\"
 	     )
 	   (defun main ()
 	     
-	     ,(let ((files (directory #P"/sys/class/hwmon/hwmon0/*input")))
+	     ,(let ((files (let* ((dir #P"/sys/class/hwmon/hwmon0/")
+				  (paths (directory (merge-pathnames "*input" dir)))
+				  )
+			     (loop for path in paths collect
+				  (let* ((prefix (elt (cl-ppcre:split "_"
+								      (pathname-name path))
+						      0))
+					 (label-file (merge-pathnames (format nil "~a_label" prefix)
+								      dir)))
+				    (list (with-open-file (s label-file)
+					    (read s))
+					  path))))
+		      ;(directory #P"/sys/class/hwmon/hwmon0/*input")
+		      )
+		    )
 		`(do0
 		  #+nil
 		  (loop
@@ -276,26 +291,25 @@ positioned-io = \"*\"
 						  (expect (string "read error")))))
 			       ,(logprint f `(contents))))))
 
-		  (let (,@(loop for f in files and i from 0 collect
-			       `(,(format nil "f~a" i) (dot (File--open (string ,f))
+		  (let (,@(loop for (name f) in files and i from 0 collect
+			       `(,(format nil "f_~a" name) (dot (File--open (string ,f))
 							    (unwrap)))))
 		    (loop
-		       (let* (,@(loop for f in files and i from 0 collect
-				     `(,(format nil "buf~a" i) "[0; 32]")))
-			 (declare (type (array u8 32) ,@(loop for f in files and i from 0 collect
+		       (let* (,@(loop for (name f) in files and i from 0 collect
+				     `(,(format nil "buf_~a" name) "[0; 32]")))
+			 #+nil (declare (type (array u8 32) ,@(loop for f in files and i from 0 collect
 							     (format nil "buf~a" i))))
-			 (let (,@(loop for f in files and i from 0 collect
-				      `(,(format nil "_bytes~a" i) (dot ,(format nil "f~a" i)
-									(read_at 0 ,(format nil "&mut buf~a" i))
-									(expect (string "read_at fail"))))))
+			 (let (,@(loop for (name f) in files and i from 0 collect
+				      `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
+									(read_at 0 ,(format nil "&mut buf_~a" name))
+									(expect (string ,(format nil "read_at ~a fail" name)))))))
 			   ;,(logprint "read" (loop for f in files and i from 0 collect (format nil "_bytes~a" i)))
-			   (let (,@(loop for f in files and i from 0 collect
-					`(,(format nil "v~a" i) (dot (read_int ,(format nil "&mut buf~a" i))
-								     (expect (string "read_int error"))))))
+			   (let (,@(loop for (name f) in files and i from 0 collect
+					`(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
+								     (expect (string ,(format nil "read_int ~a error" name)))))))
 			   
-			    ,(logprint "" (loop for f in files and i from 0 collect
-					       (format nil "v~a" i)
-					       )))))))
+			    ,(logprint "" (loop for (name f) in files and i from 0 collect
+					       (format nil "v_~a" name))))))))
 		  
 		  ,@(loop for f in files collect
 			  `(progn
@@ -342,5 +356,6 @@ positioned-io = \"*\"
     
     (write-source *code-file*
 		  code)))
+
 
 

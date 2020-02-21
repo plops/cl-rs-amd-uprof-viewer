@@ -148,84 +148,79 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
     return Ok(res);
 }
 fn main() {
-    let f0 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input").unwrap();
-    let f1 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input").unwrap();
-    let f2 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input").unwrap();
-    let f3 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input").unwrap();
-    let f4 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input").unwrap();
-    let f5 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input").unwrap();
-    let f6 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input").unwrap();
-    let f7 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input").unwrap();
-    let f8 = File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input").unwrap();
+    let f_SVI2_C_Core =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input").unwrap();
+    let f_SVI2_C_SoC =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input").unwrap();
+    let f_SVI2_Core =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input").unwrap();
+    let f_SVI2_SoC =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input").unwrap();
+    let f_SVI2_P_Core =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input").unwrap();
+    let f_SVI2_P_SoC =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input").unwrap();
+    let f_Tdie =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input").unwrap();
+    let f_Tctl =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input").unwrap();
+    let f_Tccd1 =
+        File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input").unwrap();
     loop {
-        let mut buf0: [u8; (32)] = [0; 32];
-        let mut buf1: [u8; (32)] = [0; 32];
-        let mut buf2: [u8; (32)] = [0; 32];
-        let mut buf3: [u8; (32)] = [0; 32];
-        let mut buf4: [u8; (32)] = [0; 32];
-        let mut buf5: [u8; (32)] = [0; 32];
-        let mut buf6: [u8; (32)] = [0; 32];
-        let mut buf7: [u8; (32)] = [0; 32];
-        let mut buf8: [u8; (32)] = [0; 32];
-        let _bytes0 = f0.read_at(0, &mut buf0).expect("read_at fail");
-        let _bytes1 = f1.read_at(0, &mut buf1).expect("read_at fail");
-        let _bytes2 = f2.read_at(0, &mut buf2).expect("read_at fail");
-        let _bytes3 = f3.read_at(0, &mut buf3).expect("read_at fail");
-        let _bytes4 = f4.read_at(0, &mut buf4).expect("read_at fail");
-        let _bytes5 = f5.read_at(0, &mut buf5).expect("read_at fail");
-        let _bytes6 = f6.read_at(0, &mut buf6).expect("read_at fail");
-        let _bytes7 = f7.read_at(0, &mut buf7).expect("read_at fail");
-        let _bytes8 = f8.read_at(0, &mut buf8).expect("read_at fail");
-        let v0 = read_int(&mut buf0).expect("read_int error");
-        let v1 = read_int(&mut buf1).expect("read_int error");
-        let v2 = read_int(&mut buf2).expect("read_int error");
-        let v3 = read_int(&mut buf3).expect("read_int error");
-        let v4 = read_int(&mut buf4).expect("read_int error");
-        let v5 = read_int(&mut buf5).expect("read_int error");
-        let v6 = read_int(&mut buf6).expect("read_int error");
-        let v7 = read_int(&mut buf7).expect("read_int error");
-        let v8 = read_int(&mut buf8).expect("read_int error");
+        let mut buf_SVI2_C_Core = [0; 32];
+        let mut buf_SVI2_C_SoC = [0; 32];
+        let mut buf_SVI2_Core = [0; 32];
+        let mut buf_SVI2_SoC = [0; 32];
+        let mut buf_SVI2_P_Core = [0; 32];
+        let mut buf_SVI2_P_SoC = [0; 32];
+        let mut buf_Tdie = [0; 32];
+        let mut buf_Tctl = [0; 32];
+        let mut buf_Tccd1 = [0; 32];
+        let _bytes_SVI2_C_Core = f_SVI2_C_Core
+            .read_at(0, &mut buf_SVI2_C_Core)
+            .expect("read_at SVI2_C_Core fail");
+        let _bytes_SVI2_C_SoC = f_SVI2_C_SoC
+            .read_at(0, &mut buf_SVI2_C_SoC)
+            .expect("read_at SVI2_C_SoC fail");
+        let _bytes_SVI2_Core = f_SVI2_Core
+            .read_at(0, &mut buf_SVI2_Core)
+            .expect("read_at SVI2_Core fail");
+        let _bytes_SVI2_SoC = f_SVI2_SoC
+            .read_at(0, &mut buf_SVI2_SoC)
+            .expect("read_at SVI2_SoC fail");
+        let _bytes_SVI2_P_Core = f_SVI2_P_Core
+            .read_at(0, &mut buf_SVI2_P_Core)
+            .expect("read_at SVI2_P_Core fail");
+        let _bytes_SVI2_P_SoC = f_SVI2_P_SoC
+            .read_at(0, &mut buf_SVI2_P_SoC)
+            .expect("read_at SVI2_P_SoC fail");
+        let _bytes_Tdie = f_Tdie.read_at(0, &mut buf_Tdie).expect("read_at Tdie fail");
+        let _bytes_Tctl = f_Tctl.read_at(0, &mut buf_Tctl).expect("read_at Tctl fail");
+        let _bytes_Tccd1 = f_Tccd1
+            .read_at(0, &mut buf_Tccd1)
+            .expect("read_at Tccd1 fail");
+        let v_SVI2_C_Core = read_int(&mut buf_SVI2_C_Core).expect("read_int SVI2_C_Core error");
+        let v_SVI2_C_SoC = read_int(&mut buf_SVI2_C_SoC).expect("read_int SVI2_C_SoC error");
+        let v_SVI2_Core = read_int(&mut buf_SVI2_Core).expect("read_int SVI2_Core error");
+        let v_SVI2_SoC = read_int(&mut buf_SVI2_SoC).expect("read_int SVI2_SoC error");
+        let v_SVI2_P_Core = read_int(&mut buf_SVI2_P_Core).expect("read_int SVI2_P_Core error");
+        let v_SVI2_P_SoC = read_int(&mut buf_SVI2_P_SoC).expect("read_int SVI2_P_SoC error");
+        let v_Tdie = read_int(&mut buf_Tdie).expect("read_int Tdie error");
+        let v_Tctl = read_int(&mut buf_Tctl).expect("read_int Tctl error");
+        let v_Tccd1 = read_int(&mut buf_Tccd1).expect("read_int Tccd1 error");
+        {
+            println!("{} {}:{}   v_SVI2_C_Core={}  v_SVI2_C_SoC={}  v_SVI2_Core={}  v_SVI2_SoC={}  v_SVI2_P_Core={}  v_SVI2_P_SoC={}  v_Tdie={}  v_Tctl={}  v_Tccd1={}", Utc::now(), file!(), line!(), v_SVI2_C_Core, v_SVI2_C_SoC, v_SVI2_Core, v_SVI2_SoC, v_SVI2_P_Core, v_SVI2_P_SoC, v_Tdie, v_Tctl, v_Tccd1);
+        };
+    }
+    {
+        let contents = fs::read_to_string(
+            "(SVI2_C_Core /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input)",
+        )
+        .expect("read error");
         {
             println!(
-                "{} {}:{}   v0={}  v1={}  v2={}  v3={}  v4={}  v5={}  v6={}  v7={}  v8={}",
-                Utc::now(),
-                file!(),
-                line!(),
-                v0,
-                v1,
-                v2,
-                v3,
-                v4,
-                v5,
-                v6,
-                v7,
-                v8
-            );
-        };
-    }
-    {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input")
-                .expect("read error");
-        {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input  contents={}", Utc::now(), file!(), line!(), contents);
-        };
-    }
-    {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input")
-                .expect("read error");
-        {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input  contents={}", Utc::now(), file!(), line!(), contents);
-        };
-    }
-    {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input")
-                .expect("read error");
-        {
-            println!(
-                "{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input  contents={}",
+                "{} {}:{} (SVI2_C_Core
+          /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input)  contents={}",
                 Utc::now(),
                 file!(),
                 line!(),
@@ -234,12 +229,14 @@ fn main() {
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(SVI2_C_SoC /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input)",
+        )
+        .expect("read error");
         {
             println!(
-                "{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input  contents={}",
+                "{} {}:{} (SVI2_C_SoC
+          /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input)  contents={}",
                 Utc::now(),
                 file!(),
                 line!(),
@@ -248,43 +245,80 @@ fn main() {
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(SVI2_Core /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input)",
+        )
+        .expect("read error");
         {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            println!("{} {}:{} (SVI2_Core /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input)  contents={}", Utc::now(), file!(), line!(), contents);
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(SVI2_SoC /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input)",
+        )
+        .expect("read error");
         {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            println!("{} {}:{} (SVI2_SoC /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input)  contents={}", Utc::now(), file!(), line!(), contents);
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(SVI2_P_Core /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input)",
+        )
+        .expect("read error");
         {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input  contents={}", Utc::now(), file!(), line!(), contents);
+            println!(
+                "{} {}:{} (SVI2_P_Core
+          /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input)  contents={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                contents
+            );
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(SVI2_P_SoC /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input)",
+        )
+        .expect("read error");
         {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input  contents={}", Utc::now(), file!(), line!(), contents);
+            println!(
+                "{} {}:{} (SVI2_P_SoC
+          /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input)  contents={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                contents
+            );
         };
     }
     {
-        let contents =
-            fs::read_to_string("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input")
-                .expect("read error");
+        let contents = fs::read_to_string(
+            "(Tdie /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input)",
+        )
+        .expect("read error");
         {
-            println!("{} {}:{} /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input  contents={}", Utc::now(), file!(), line!(), contents);
+            println!("{} {}:{} (Tdie /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input)  contents={}", Utc::now(), file!(), line!(), contents);
+        };
+    }
+    {
+        let contents = fs::read_to_string(
+            "(Tctl /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input)",
+        )
+        .expect("read error");
+        {
+            println!("{} {}:{} (Tctl /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input)  contents={}", Utc::now(), file!(), line!(), contents);
+        };
+    }
+    {
+        let contents = fs::read_to_string(
+            "(Tccd1 /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input)",
+        )
+        .expect("read error");
+        {
+            println!("{} {}:{} (Tccd1 /sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input)  contents={}", Utc::now(), file!(), line!(), contents);
         };
     }
     let system = init(file!());
