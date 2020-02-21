@@ -211,9 +211,6 @@ fn main() {
             let v_Tdie = read_int(&mut buf_Tdie).expect("read_int Tdie error");
             let v_Tctl = read_int(&mut buf_Tctl).expect("read_int Tctl error");
             let v_Tccd1 = read_int(&mut buf_Tccd1).expect("read_int Tccd1 error");
-            {
-                println!("{} {}:{}   v_SVI2_C_Core={}  v_SVI2_C_SoC={}  v_SVI2_Core={}  v_SVI2_SoC={}  v_SVI2_P_Core={}  v_SVI2_P_SoC={}  v_Tdie={}  v_Tctl={}  v_Tccd1={}", Utc::now(), file!(), line!(), v_SVI2_C_Core, v_SVI2_C_SoC, v_SVI2_Core, v_SVI2_SoC, v_SVI2_P_Core, v_SVI2_P_SoC, v_Tdie, v_Tctl, v_Tccd1);
-            }
             s.send((
                 Utc::now(),
                 v_SVI2_C_Core,
@@ -239,7 +236,14 @@ fn main() {
                 ui.text(format!("mouse: ({:.1},{:.1})", mouse_pos[0], mouse_pos[1]));
                 let tup = r.recv().unwrap();
                 {
-                    println!("{} {}:{}   tup.0={}", Utc::now(), file!(), line!(), tup.0);
+                    println!(
+                        "{} {}:{}   tup.0={}  tup.1={}",
+                        Utc::now(),
+                        file!(),
+                        line!(),
+                        tup.0,
+                        tup.1
+                    );
                 };
             });
         Window::new(im_str!("recv"))

@@ -299,7 +299,7 @@ positioned-io = \"*\"
 				 (let (,@(loop for (name f) in files and i from 0 collect
 					      `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
 									       (expect (string ,(format nil "read_int ~a error" name)))))))
-				    ,(logprint "" (loop for (name f) in files and i from 0 collect
+				    #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
 							    (format nil "v_~a" name)))
 				   (dot s
 					(send
@@ -341,7 +341,7 @@ positioned-io = \"*\"
 							 (unwrap)))
 					       ;(a tup.0)
 					       )
-					   ,(logprint "" `(tup.0
+					   ,(logprint "" `(tup.0 tup.1
 							   #+nil (? tup ;(aref tup 0)
 							      ) )))))))
 			 (dot ("Window::new" (im_str! (string "recv")))
