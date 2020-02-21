@@ -116,7 +116,9 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
                 res = parse(&(data[0..i]));
             }
             b'0'..=b'9' => (),
-            _ => Err(io::Error::new(io::ErrorKind::Other, "int reader fail"))?,
+            _ => {
+                res = parse(&(data[0..i]));
+            }
         }
     }
     return Ok(res);

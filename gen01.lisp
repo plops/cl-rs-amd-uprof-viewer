@@ -249,9 +249,12 @@ positioned-io = \"*\"
 		      ("b'0'..=b'9'"
 		       "()")
 					;(_ (return (? (Err MyError))))
-		      (_ (? (Err (io--Error--new
-				  io--ErrorKind--Other
-				  (string "int reader fail")))))))
+		      (_
+		       (setf res (parse (ref (aref data "0..i"))))
+		        #+nil (? (Err 
+					     (io--Error--new
+					      io--ErrorKind--Other
+					      (string "int reader fail")))))))
 	       (return (Ok res))))
 	     )
 	   (defun main ()
