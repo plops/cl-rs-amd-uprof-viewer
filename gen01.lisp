@@ -87,10 +87,11 @@ positioned-io = \"*\"
 		(positioned_io ReadAt)
 		)
 
-	   (use (crossbeam_channel bounded))
+	   (use (crossbeam_channel bounded)
+		(std collections VecDeque))
 	   
 
-	   
+	   ;(chrono::datetime::DateTime<chrono::offset::utc::Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)
 	   
 	   (defstruct0 System
 	       (event_loop "EventLoop<()>")
@@ -336,14 +337,21 @@ positioned-io = \"*\"
 							   )
 						   (aref mouse_pos 0)
 						   (aref mouse_pos 1)))
-					 (let ((tup (dot r
-							 (recv)
-							 (unwrap)))
-					       ;(a tup.0)
-					       )
-					   ,(logprint "" `(tup.0 tup.1
-							   #+nil (? tup ;(aref tup 0)
-							      ) )))))))
+					 (let* ((history (VecDeque--with_capacity 100)))
+					   (declare (type "VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)>"
+							  history))
+					  (let ((tup (dot r
+							  (recv)
+							  (unwrap)))
+					;(a tup.0)
+						)
+					    (dot
+					     history
+					     (push_back tup))
+					    (for (tup history)
+					     ,(logprint "" `(tup.0 tup.1
+								   #+nil (? tup ;(aref tup 0)
+									    ) )))))))))
 			 (dot ("Window::new" (im_str! (string "recv")))
 			      (size (list 200.0 100.0)
 				    "Condition::FirstUseEver")
