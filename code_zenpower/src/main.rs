@@ -105,19 +105,74 @@ impl System {
 }
 fn parse(data: &[u8]) -> u64 {
     return data.iter().fold(0, |a, b| {
+        {
+            println!(
+                "{} {}:{} parse  a={}  b={}  (b-b'0')={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                a,
+                b,
+                (b - b'0')
+            );
+        }
         return (((10) * (a)) + ((b - b'0') as u64));
     });
 }
 fn read_int(data: &[u8]) -> io::Result<u64> {
     let mut res = 0;
     for (i, byte) in data.iter().enumerate() {
+        {
+            println!(
+                "{} {}:{} parse  i={}  byte={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                i,
+                byte
+            );
+        }
         match byte {
             b'\n' => {
+                {
+                    println!(
+                        "{} {}:{} parse newline  i={}  byte={}",
+                        Utc::now(),
+                        file!(),
+                        line!(),
+                        i,
+                        byte
+                    );
+                }
                 res = parse(&(data[0..i]));
+                return Ok(res);
             }
             b'0'..=b'9' => (),
-            _ => {
+            0 => {
+                {
+                    println!(
+                        "{} {}:{} parse zero  i={}  byte={}",
+                        Utc::now(),
+                        file!(),
+                        line!(),
+                        i,
+                        byte
+                    );
+                }
                 res = parse(&(data[0..i]));
+            }
+            _ => {
+                {
+                    println!(
+                        "{} {}:{} parse error  i={}  byte={}",
+                        Utc::now(),
+                        file!(),
+                        line!(),
+                        i,
+                        byte
+                    );
+                }
+                Err(io::Error::new(io::ErrorKind::Other, "int reader fail"))?
             }
         }
     }
@@ -143,15 +198,18 @@ fn main() {
         let mut buf6: [u8; (512)] = [0; 512];
         let mut buf7: [u8; (512)] = [0; 512];
         let mut buf8: [u8; (512)] = [0; 512];
-        let _bytes0 = f0.read_at(0, &mut buf0);
-        let _bytes1 = f1.read_at(0, &mut buf1);
-        let _bytes2 = f2.read_at(0, &mut buf2);
-        let _bytes3 = f3.read_at(0, &mut buf3);
-        let _bytes4 = f4.read_at(0, &mut buf4);
-        let _bytes5 = f5.read_at(0, &mut buf5);
-        let _bytes6 = f6.read_at(0, &mut buf6);
-        let _bytes7 = f7.read_at(0, &mut buf7);
-        let _bytes8 = f8.read_at(0, &mut buf8);
+        let _bytes0 = f0.read_at(0, &mut buf0).expect("read_at fail");
+        let _bytes1 = f1.read_at(0, &mut buf1).expect("read_at fail");
+        let _bytes2 = f2.read_at(0, &mut buf2).expect("read_at fail");
+        let _bytes3 = f3.read_at(0, &mut buf3).expect("read_at fail");
+        let _bytes4 = f4.read_at(0, &mut buf4).expect("read_at fail");
+        let _bytes5 = f5.read_at(0, &mut buf5).expect("read_at fail");
+        let _bytes6 = f6.read_at(0, &mut buf6).expect("read_at fail");
+        let _bytes7 = f7.read_at(0, &mut buf7).expect("read_at fail");
+        let _bytes8 = f8.read_at(0, &mut buf8).expect("read_at fail");
+        {
+            println!("{} {}:{} read  _bytes0={}  _bytes1={}  _bytes2={}  _bytes3={}  _bytes4={}  _bytes5={}  _bytes6={}  _bytes7={}  _bytes8={}", Utc::now(), file!(), line!(), _bytes0, _bytes1, _bytes2, _bytes3, _bytes4, _bytes5, _bytes6, _bytes7, _bytes8);
+        }
         let v0 = read_int(&mut buf0).expect("read_int error");
         let v1 = read_int(&mut buf1).expect("read_int error");
         let v2 = read_int(&mut buf2).expect("read_int error");
