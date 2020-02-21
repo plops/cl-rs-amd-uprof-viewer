@@ -320,45 +320,45 @@ positioned-io = \"*\"
 	       
 	       ,(logprint "stock" `(body)))
 	     (let ((system (init (file!))))
-	       (system.main_loop
-		(space move
-		       (lambda (_ ui)
-			 (dot ("Window::new" (im_str! (string "Hello world")))
-			      (size (list 300.0 100.0)
-				    "Condition::FirstUseEver")
-			      (build ui
-				     (lambda ()
-				       (ui.text (im_str! (string "Hello World")))
-				       (let ((mouse_pos (dot ui
-							     (io)
-							     mouse_pos)))
-					 (ui.text (format!
-						   (string "mouse: ({:.1},{:.1})"
-							   )
-						   (aref mouse_pos 0)
-						   (aref mouse_pos 1)))
-					 (let* ((history (VecDeque--with_capacity 100)))
-					   (declare (type "VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)>"
-							  history))
-					  (let ((tup (dot r
+	       (let* ((history (VecDeque--with_capacity 100)))
+		 (declare (type "VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)>"
+					   history))
+		(system.main_loop
+		 (space  move
+			(lambda (_ ui)
+			  (let ((tup (dot r
 							  (recv)
-							  (unwrap)))
-					;(a tup.0)
-						)
+							  (unwrap))))
 					    (dot
 					     history
 					     (push_back tup))
+					    ,(logprint "hist" `((history.len)))
 					    (for (tup history)
-					     ,(logprint "" `(tup.0 tup.1
-								   #+nil (? tup ;(aref tup 0)
-									    ) )))))))))
-			 (dot ("Window::new" (im_str! (string "recv")))
-			      (size (list 200.0 100.0)
-				    "Condition::FirstUseEver")
-			      (build ui
-				     (lambda ()
-				       (ui.text (im_str! (string "recv")))
-				       )))))))))))
+						 ,(logprint "" `( tup.0 tup.1
+									#+nil (? tup ;(aref tup 0)
+										 ) ))))
+			  (dot ("Window::new" (im_str! (string "Hello world")))
+			       (size (list 300.0 100.0)
+				     "Condition::FirstUseEver")
+			       (build ui
+				      (lambda ()
+					(ui.text (im_str! (string "Hello World")))
+					(let ((mouse_pos (dot ui
+							      (io)
+							      mouse_pos)))
+					  (ui.text (format!
+						    (string "mouse: ({:.1},{:.1})"
+							    )
+						    (aref mouse_pos 0)
+						    (aref mouse_pos 1)))
+					  ))))
+			  (dot ("Window::new" (im_str! (string "recv")))
+			       (size (list 200.0 100.0)
+				     "Condition::FirstUseEver")
+			       (build ui
+				      (lambda ()
+					(ui.text (im_str! (string "recv")))
+					))))))))))))
 
     
     

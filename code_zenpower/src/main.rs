@@ -228,39 +228,38 @@ fn main() {
         }
     });
     let system = init(file!());
+    let mut history: VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)> =
+        VecDeque::with_capacity(100);
     system.main_loop(move |_, ui| {
+        let tup = r.recv().unwrap();
+        history.push_back(tup);
+        {
+            println!(
+                "{} {}:{} hist  history.len()={}",
+                Utc::now(),
+                file!(),
+                line!(),
+                history.len()
+            );
+        }
+        for tup in history {
+            {
+                println!(
+                    "{} {}:{}   tup.0={}  tup.1={}",
+                    Utc::now(),
+                    file!(),
+                    line!(),
+                    tup.0,
+                    tup.1
+                );
+            }
+        }
         Window::new(im_str!("Hello world"))
             .size([3.00e+2, 1.00e+2], Condition::FirstUseEver)
             .build(ui, || {
                 ui.text(im_str!("Hello World"));
                 let mouse_pos = ui.io().mouse_pos;
                 ui.text(format!("mouse: ({:.1},{:.1})", mouse_pos[0], mouse_pos[1]));
-                let mut history: VecDeque<(
-                    DateTime<Utc>,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                    u64,
-                )> = VecDeque::with_capacity(100);
-                let tup = r.recv().unwrap();
-                history.push_back(tup);
-                for tup in history {
-                    {
-                        println!(
-                            "{} {}:{}   tup.0={}  tup.1={}",
-                            Utc::now(),
-                            file!(),
-                            line!(),
-                            tup.0,
-                            tup.1
-                        );
-                    }
-                }
             });
         Window::new(im_str!("recv"))
             .size([2.00e+2, 1.00e+2], Condition::FirstUseEver)
