@@ -375,16 +375,26 @@ positioned-io = \"*\"
 					       (for (e h)
 						,@(loop for (name f) in *hwmon-files* and j from 0 collect
 						       `(do0
-							  (setf (aref ,(format nil "data_~a" name) i) (coerce (dot e ,(+ 1 j)) f32))
-							  ))
+							  (setf (aref ,(format nil "data_~a" name) i) (coerce (dot e ,(+ 1 j)) f32))))
 						(incf i)))
 					     
 					     ,@(loop for (name f) in *hwmon-files*
 						  and j from 0 collect
-						    `(dot ui (plot_lines
-							      (im_str! (string ,name))
-							      (ref ,(format nil "data_~a" name)))
-							  (build)))))))))))))))))
+						    (let ((dat (format nil "data_~a" name)))
+						     `(progn
+							(let* ((mi (aref ,dat 0))
+							       (ma (aref ,dat 0)))
+							  (for (e (ref ,dat))
+							       (when (< *e mi)
+								 (setf mi *e))
+							       (when (< ma *e)
+								 (setf ma *e)))
+							  (let ((label (im_str! (string ,(format nil "name {:?} {:?}"))
+									    mi ma)))
+							   (dot ui (plot_lines
+								   &label
+								    (ref ,dat))
+								(build)))))))))))))))))))))
 
     
     

@@ -296,20 +296,132 @@ fn main() {
                         data_Tccd1[i] = (e.9 as f32);
                         i += 1;
                     }
-                    ui.plot_lines(im_str!("SVI2_C_Core"), &(data_SVI2_C_Core))
-                        .build();
-                    ui.plot_lines(im_str!("SVI2_C_SoC"), &(data_SVI2_C_SoC))
-                        .build();
-                    ui.plot_lines(im_str!("SVI2_Core"), &(data_SVI2_Core))
-                        .build();
-                    ui.plot_lines(im_str!("SVI2_SoC"), &(data_SVI2_SoC)).build();
-                    ui.plot_lines(im_str!("SVI2_P_Core"), &(data_SVI2_P_Core))
-                        .build();
-                    ui.plot_lines(im_str!("SVI2_P_SoC"), &(data_SVI2_P_SoC))
-                        .build();
-                    ui.plot_lines(im_str!("Tdie"), &(data_Tdie)).build();
-                    ui.plot_lines(im_str!("Tctl"), &(data_Tctl)).build();
-                    ui.plot_lines(im_str!("Tccd1"), &(data_Tccd1)).build();
+                    {
+                        let mut mi = data_SVI2_C_Core[0];
+                        let mut ma = data_SVI2_C_Core[0];
+                        for e in &(data_SVI2_C_Core) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_C_Core)).build();
+                    }
+                    {
+                        let mut mi = data_SVI2_C_SoC[0];
+                        let mut ma = data_SVI2_C_SoC[0];
+                        for e in &(data_SVI2_C_SoC) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_C_SoC)).build();
+                    }
+                    {
+                        let mut mi = data_SVI2_Core[0];
+                        let mut ma = data_SVI2_Core[0];
+                        for e in &(data_SVI2_Core) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_Core)).build();
+                    }
+                    {
+                        let mut mi = data_SVI2_SoC[0];
+                        let mut ma = data_SVI2_SoC[0];
+                        for e in &(data_SVI2_SoC) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_SoC)).build();
+                    }
+                    {
+                        let mut mi = data_SVI2_P_Core[0];
+                        let mut ma = data_SVI2_P_Core[0];
+                        for e in &(data_SVI2_P_Core) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_P_Core)).build();
+                    }
+                    {
+                        let mut mi = data_SVI2_P_SoC[0];
+                        let mut ma = data_SVI2_P_SoC[0];
+                        for e in &(data_SVI2_P_SoC) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_SVI2_P_SoC)).build();
+                    }
+                    {
+                        let mut mi = data_Tdie[0];
+                        let mut ma = data_Tdie[0];
+                        for e in &(data_Tdie) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_Tdie)).build();
+                    }
+                    {
+                        let mut mi = data_Tctl[0];
+                        let mut ma = data_Tctl[0];
+                        for e in &(data_Tctl) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_Tctl)).build();
+                    }
+                    {
+                        let mut mi = data_Tccd1[0];
+                        let mut ma = data_Tccd1[0];
+                        for e in &(data_Tccd1) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_Tccd1)).build();
+                    };
                 });
         });
     }
