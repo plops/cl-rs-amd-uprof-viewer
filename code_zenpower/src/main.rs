@@ -162,7 +162,7 @@ fn main() {
                 let tup = r.recv().ok().unwrap();
                 let mut h = history.lock().unwrap();
                 h.push_back(tup);
-                if 100 < h.len() {
+                if 3900 < h.len() {
                     h.pop_front();
                 };
             }
@@ -272,15 +272,18 @@ fn main() {
             Window::new(im_str!("recv"))
                 .size([2.00e+2, 1.00e+2], Condition::FirstUseEver)
                 .build(ui, || {
-                    let mut i = 0;
                     let h_guard = history.lock().unwrap();
                     let h = h_guard.iter();
                     let mut a = vec![0.0f32; h.len()];
-                    for e in h {
-                        a[i] = (e.1 as f32);
-                        i += 1;
-                    }
-                    ui.plot_lines(im_str!("bla"), &a).build();
+                    {
+                        let mut i = 0;
+                        for e in h {
+                            a[i] = (e.1 as f32);
+                            i += 1;
+                        }
+                        let b = &a;
+                        ui.plot_lines(im_str!("SVI2_C_Core"), b).build();
+                    };
                 });
         });
     }

@@ -298,7 +298,7 @@ positioned-io = \"*\"
 				    (dot
 				     h
 				     (push_back tup))
-				    (when (< 100 (h.len))
+				    (when (< 3900 (h.len))
 				      (h.pop_front))))))))))
 	       
 
@@ -362,23 +362,25 @@ positioned-io = \"*\"
 			   (dot ("Window::new" (im_str! (string "recv")))
 				(size (list 200.0 100.0)
 				      "Condition::FirstUseEver")
+				;; https://github.com/Gekkio/imgui-rs/blob/master/imgui-examples/examples/test_window_impl.rs
 				(build ui
 				       (lambda ()
-					 (let* (
-						(i 0))
-					   (let ((h_guard (dot history (lock) (unwrap)))
-						 (h (dot h_guard
-							 (iter))))
-					     (let* ((a "vec![0.0f32;h.len()]"))
-					       (for (e h)
-						   (setf (aref a i) (coerce e.1 f32))
-						   (incf i))
-					       (dot ui (plot_lines
-							(im_str! (string "bla"))
-							&a)
-						    (build))))
-					   #+nil
-					   (ui.text (im_str! (string "recv"))))))))))))))))
+					 (let ((h_guard (dot history (lock) (unwrap)))
+					       (h (dot h_guard
+						       (iter))))
+					   (let* ((a "vec![0.0f32;h.len()]"))
+					    ,@(loop for (name f) in *hwmon-files*
+						 and j from 0 below 1 collect
+						   `(progn
+						      (let* ((i 0))
+							(for (e h)
+							     (setf (aref a i) (coerce (dot e ,(+ 1 j)) f32))
+							     (incf i))
+							(let ((b &a))
+							  (dot ui (plot_lines
+								   (im_str! (string ,name))
+								   b)
+							       (build))))))))))))))))))))
 
     
     
