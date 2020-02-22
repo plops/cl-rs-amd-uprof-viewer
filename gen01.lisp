@@ -278,7 +278,9 @@ positioned-io = \"*\"
 	       (return (Ok res)))))
 	   (defun main ()
 
-	     (let (((values s r) (bounded 0))
+	     (let (((values s r) ;(crossbeam_channel--bounded 0)
+		    (crossbeam_channel--unbounded)
+		    )
 		   (history (std--sync--Arc--new (Mutex--new (VecDeque--with_capacity 100)))))
 		   #+nil (declare (type ,(format nil "VecDeque<(DateTime<Utc>, ~{~a~^,~})>"
 					   (loop for f in  *hwmon-files* collect "u64"))
@@ -305,35 +307,36 @@ positioned-io = \"*\"
 									     ) )))))))))
 		   
 
-
-		   
-		   (spawn
-		    (space
-		     move
-		     (lambda ()
-		       (do0
-			(let (,@(loop for (name f) in *hwmon-files*
-				   and i_ from 0 collect
-				     `(,(format nil "f_~a" name) (dot (File--open (string ,f))
-								      (unwrap)))))
-			  (loop
-			     (let* (,@(loop for (name f) in *hwmon-files* and ii from 0 collect
-					   `(,(format nil "buf_~a" name) "[0; 32]")))
-			       (let (,@(loop for (name f) in *hwmon-files* and iii from 0 collect
-					    `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
-										  (read_at 0 ,(format nil "&mut buf_~a" name))
-										  (expect (string ,(format nil "read_at ~a fail" name)))))))
-				 (let (,@(loop for (name f) in *hwmon-files* and iiii from 0 collect
-					      `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
-									       (expect (string ,(format nil "read_int ~a error" name)))))))
-				   #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
-							    (format nil "v_~a" name)))
-				   (dot s
-					(send
-					 (values (Utc--now)
-						 ,@(loop for (name f) in *hwmon-files* and i from 0 collect
-							(format nil "v_~a" name))))
-					(unwrap))))))))))))
+		   (let ((b (dot (std--thread--Builder--new)
+				 (name (dot (string "hwmon_reader")
+					    (into))))))
+		    (b.spawn
+		     (space
+		      move
+		      (lambda ()
+			(do0
+			 (let (,@(loop for (name f) in *hwmon-files*
+				    and i_ from 0 collect
+				      `(,(format nil "f_~a" name) (dot (File--open (string ,f))
+								       (unwrap)))))
+			   (loop
+			      (let* (,@(loop for (name f) in *hwmon-files* and ii from 0 collect
+					    `(,(format nil "buf_~a" name) "[0; 32]")))
+				(let (,@(loop for (name f) in *hwmon-files* and iii from 0 collect
+					     `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
+										   (read_at 0 ,(format nil "&mut buf_~a" name))
+										   (expect (string ,(format nil "read_at ~a fail" name)))))))
+				  (let (,@(loop for (name f) in *hwmon-files* and iiii from 0 collect
+					       `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
+										(expect (string ,(format nil "read_int ~a error" name)))))))
+				    #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
+							     (format nil "v_~a" name)))
+				    (dot s
+					 (send
+					  (values (Utc--now)
+						  ,@(loop for (name f) in *hwmon-files* and i from 0 collect
+							 (format nil "v_~a" name))))
+					 (unwrap)))))))))))))
 	       #+nil (let* ((client (request--Client--new))
 			    (body (dot client
 				       (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))

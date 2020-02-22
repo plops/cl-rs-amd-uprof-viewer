@@ -152,7 +152,7 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
     return Ok(res);
 }
 fn main() {
-    let (s, r) = bounded(0);
+    let (s, r) = crossbeam_channel::unbounded();
     let history = std::sync::Arc::new(Mutex::new(VecDeque::with_capacity(100)));
     spawn(move || {
         let tup = r.recv().ok().unwrap();
@@ -160,7 +160,8 @@ fn main() {
         let mut h = history.lock().unwrap();
         h.push_back(tup);
     });
-    spawn(move || {
+    let b = std::thread::Builder::new().name("hwmon_reader".into());
+    b.spawn(move || {
         let f_SVI2_C_Core =
             File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input").unwrap();
         let f_SVI2_C_SoC =
