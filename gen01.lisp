@@ -386,12 +386,17 @@ positioned-io = \"*\"
 								   (aref time (- i 1)))))
 							  ;; (as_fractional_millis)
 							  ;; (as_seconds)
-							  (setf (aref data_time i) (coerce
-										     (dot
-										      duration
-										      (num_milliseconds))
-										     f32)))) 
-						,@(loop for (name f) in *hwmon-files* and j from 0 collect
+							  (case (dot
+								   duration
+								   (num_nanoseconds))
+							    ((Some a)
+							     (setf (aref data_time i)
+								   (coerce
+								    a
+								    f32)
+								   ))
+							    (t )))) 
+						    ,@(loop for (name f) in *hwmon-files* and j from 0 collect
 						       `(do0
 							  (setf (aref ,(format nil "data_~a" name) i) (coerce (dot e ,(+ 1 j)) f32))))
 						(incf i)))

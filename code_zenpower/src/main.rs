@@ -292,7 +292,12 @@ fn main() {
                             data_time[i] = 0.;
                         } else {
                             let duration = (time[i] - time[(i - 1)]);
-                            data_time[i] = (duration.num_milliseconds() as f32);
+                            match duration.num_nanoseconds() {
+                                Some(a) => {
+                                    data_time[i] = (a as f32);
+                                }
+                                _ => {}
+                            };
                         }
                         data_SVI2_C_Core[i] = (e.1 as f32);
                         data_SVI2_C_SoC[i] = (e.2 as f32);
