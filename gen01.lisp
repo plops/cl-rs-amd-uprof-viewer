@@ -288,12 +288,13 @@ positioned-io = \"*\"
 		   (spawn
 		    (space move
 			   (lambda ()
-			     (let ((tup (dot r
-					     (recv)
-					     (ok)
-					     (unwrap))))
-			       (let ((history (dot history
-						   (clone))))
+			     (loop
+			      (let ((history (dot history
+						  (clone)))
+				    (tup (dot r
+					      (recv)
+					      (ok)
+					      (unwrap))))
 				(let* ((h (dot history
 					       (lock)
 					       (unwrap))))

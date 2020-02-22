@@ -155,10 +155,12 @@ fn main() {
     let (s, r) = crossbeam_channel::unbounded();
     let history = std::sync::Arc::new(Mutex::new(VecDeque::with_capacity(100)));
     spawn(move || {
-        let tup = r.recv().ok().unwrap();
-        let history = history.clone();
-        let mut h = history.lock().unwrap();
-        h.push_back(tup);
+        loop {
+            let history = history.clone();
+            let tup = r.recv().ok().unwrap();
+            let mut h = history.lock().unwrap();
+            h.push_back(tup);
+        }
     });
     let b = std::thread::Builder::new().name("hwmon_reader".into());
     b.spawn(move || {
