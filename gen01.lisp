@@ -368,11 +368,28 @@ positioned-io = \"*\"
 					 (let ((h_guard (dot history (lock) (unwrap)))
 					       (h (dot h_guard
 						       (iter))))
-					   (let* (,@(loop for (name f) in *hwmon-files* and j from 0 collect
+					   (let* ((time "vec![Utc::now();h.len()]")
+						  (time_prime "vec![0.0f32;h.len()]")
+						  ,@(loop for (name f) in *hwmon-files* and j from 0 collect
 							 `(,(format nil "data_~a" name) "vec![0.0f32;h.len()]")))
 
 					     (let* ((i 0))
 					       (for (e h)
+						    (setf (aref time i) e.0)
+						    (if (== 0 i)
+							(setf (aref time_prime i) 0s0)
+							(let ((duration #+nil
+								(dot (aref time i)
+									     (signed_duration_since
+									      (aref time (- i 1))))
+								(- (aref time i)
+								   (aref time (- i 1)))))
+							  ;; (as_fractional_millis)
+							  ;; (as_seconds)
+							  (setf (aref time_prime i) (coerce
+										     duration
+										     
+										     f32)))) 
 						,@(loop for (name f) in *hwmon-files* and j from 0 collect
 						       `(do0
 							  (setf (aref ,(format nil "data_~a" name) i) (coerce (dot e ,(+ 1 j)) f32))))
@@ -389,7 +406,7 @@ positioned-io = \"*\"
 								 (setf mi *e))
 							       (when (< ma *e)
 								 (setf ma *e)))
-							  (let ((label (im_str! (string ,(format nil "name {:?} {:?}"))
+							  (let ((label (im_str! (string ,(format nil "~a {:?} {:?}" name))
 									    mi ma)))
 							   (dot ui (plot_lines
 								   &label

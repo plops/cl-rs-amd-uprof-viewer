@@ -274,6 +274,8 @@ fn main() {
                 .build(ui, || {
                     let h_guard = history.lock().unwrap();
                     let h = h_guard.iter();
+                    let mut time = vec![Utc::now(); h.len()];
+                    let mut time_prime = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_Core = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_SoC = vec![0.0f32; h.len()];
                     let mut data_SVI2_Core = vec![0.0f32; h.len()];
@@ -285,6 +287,14 @@ fn main() {
                     let mut data_Tccd1 = vec![0.0f32; h.len()];
                     let mut i = 0;
                     for e in h {
+                        time[i] = e.0;
+                        if (0) == (i) {
+                            time_prime[i] = 0.;
+                        } else {
+                            let duration = (time[i] - time[(i - 1)]);
+			    let a = duration.s
+                            //time_prime[i]
+                        }
                         data_SVI2_C_Core[i] = (e.1 as f32);
                         data_SVI2_C_SoC[i] = (e.2 as f32);
                         data_SVI2_Core[i] = (e.3 as f32);
@@ -307,7 +317,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_C_Core {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_C_Core)).build();
                     }
                     {
@@ -321,7 +331,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_C_SoC {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_C_SoC)).build();
                     }
                     {
@@ -335,7 +345,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_Core {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_Core)).build();
                     }
                     {
@@ -349,7 +359,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_SoC {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_SoC)).build();
                     }
                     {
@@ -363,7 +373,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_P_Core {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_P_Core)).build();
                     }
                     {
@@ -377,7 +387,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("SVI2_P_SoC {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_SVI2_P_SoC)).build();
                     }
                     {
@@ -391,7 +401,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("Tdie {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_Tdie)).build();
                     }
                     {
@@ -405,7 +415,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("Tctl {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_Tctl)).build();
                     }
                     {
@@ -419,7 +429,7 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("name {:?} {:?}", mi, ma);
+                        let label = im_str!("Tccd1 {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_Tccd1)).build();
                     };
                 });
