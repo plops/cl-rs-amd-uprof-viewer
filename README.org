@@ -42,7 +42,7 @@ martin@labolg ~/stage/cl-rs-amd-uprof-viewer/code_zenpower $ ls /sys/class/hwmon
 
 ** Possible improvements
 
-- RUSTFLAGS="-C target-cpu=native -C llvm-args='-cost-kind=latency'"
+- RUSTFLAGS="-C target-cpu=native -C llvm-args=-cost-kind=latency" cargo build --release
 - implement software trigger and store much more data
 - boot with isolcpu, bind the read thread to an empty cpu
 - realtime kernel
