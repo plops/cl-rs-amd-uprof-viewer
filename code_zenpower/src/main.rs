@@ -274,16 +274,42 @@ fn main() {
                 .build(ui, || {
                     let h_guard = history.lock().unwrap();
                     let h = h_guard.iter();
-                    let mut a = vec![0.0f32; h.len()];
-                    {
-                        let mut i = 0;
-                        for e in h {
-                            a[i] = (e.1 as f32);
-                            i += 1;
-                        }
-                        let b = &a;
-                        ui.plot_lines(im_str!("SVI2_C_Core"), b).build();
-                    };
+                    let mut data_SVI2_C_Core = vec![0.0f32; h.len()];
+                    let mut data_SVI2_C_SoC = vec![0.0f32; h.len()];
+                    let mut data_SVI2_Core = vec![0.0f32; h.len()];
+                    let mut data_SVI2_SoC = vec![0.0f32; h.len()];
+                    let mut data_SVI2_P_Core = vec![0.0f32; h.len()];
+                    let mut data_SVI2_P_SoC = vec![0.0f32; h.len()];
+                    let mut data_Tdie = vec![0.0f32; h.len()];
+                    let mut data_Tctl = vec![0.0f32; h.len()];
+                    let mut data_Tccd1 = vec![0.0f32; h.len()];
+                    let mut i = 0;
+                    for e in h {
+                        data_SVI2_C_Core[i] = (e.1 as f32);
+                        data_SVI2_C_SoC[i] = (e.2 as f32);
+                        data_SVI2_Core[i] = (e.3 as f32);
+                        data_SVI2_SoC[i] = (e.4 as f32);
+                        data_SVI2_P_Core[i] = (e.5 as f32);
+                        data_SVI2_P_SoC[i] = (e.6 as f32);
+                        data_Tdie[i] = (e.7 as f32);
+                        data_Tctl[i] = (e.8 as f32);
+                        data_Tccd1[i] = (e.9 as f32);
+                        i += 1;
+                    }
+                    ui.plot_lines(im_str!("SVI2_C_Core"), &(data_SVI2_C_Core))
+                        .build();
+                    ui.plot_lines(im_str!("SVI2_C_SoC"), &(data_SVI2_C_SoC))
+                        .build();
+                    ui.plot_lines(im_str!("SVI2_Core"), &(data_SVI2_Core))
+                        .build();
+                    ui.plot_lines(im_str!("SVI2_SoC"), &(data_SVI2_SoC)).build();
+                    ui.plot_lines(im_str!("SVI2_P_Core"), &(data_SVI2_P_Core))
+                        .build();
+                    ui.plot_lines(im_str!("SVI2_P_SoC"), &(data_SVI2_P_SoC))
+                        .build();
+                    ui.plot_lines(im_str!("Tdie"), &(data_Tdie)).build();
+                    ui.plot_lines(im_str!("Tctl"), &(data_Tctl)).build();
+                    ui.plot_lines(im_str!("Tccd1"), &(data_Tccd1)).build();
                 });
         });
     }
