@@ -28,7 +28,7 @@ The readout is surprisingly fast. The doc folder contains a screen capture (pic 
 
 The graphs on the left show 900 samples. The two numbers on the right give the minimum and maximum values.
 
-Note: Currently, the hwmon files are hardcoded to be the files in my system:
+Note: Currently, the hwmon files are hardcoded to be the files in my AMD Ryzen 3600 system:
 
 
 martin@labolg ~/stage/cl-rs-amd-uprof-viewer/code_zenpower $ ls /sys/class/hwmon/hwmon0/*_{input,label}
