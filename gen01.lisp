@@ -54,7 +54,7 @@
 		     :if-exists :supersede)
     (format s "~a"
 	    "[package]
-name = \"rs03_glium\"
+name = \"hwmon_temp_viewer\"
 version = \"0.1.0\"
 authors = [\"Martin Kielhorn <kielhorn.martin@gmail.com>\"]
 edition = \"2018\"
@@ -69,6 +69,12 @@ imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
+
+
+
+# this shaves 1MB off the binary
+[profile.release]
+panic = \"abort\"
 "))
 
   
