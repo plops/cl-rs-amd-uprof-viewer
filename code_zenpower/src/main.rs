@@ -272,9 +272,14 @@ fn main() {
             Window::new(im_str!("recv"))
                 .size([2.00e+2, 1.00e+2], Condition::FirstUseEver)
                 .build(ui, || {
-                    let hm = history.clone();
-                    let h = hm.lock().unwrap();
-                    let a: [f32; (3)] = [1.0, 2.0, 3.0];
+                    let mut i = 0;
+                    let h_guard = history.lock().unwrap();
+                    let h = h_guard.iter();
+                    let mut a = vec![0.0f32; h.len()];
+                    for e in h {
+                        a[i] = (e.1 as f32);
+                        i += 1;
+                    }
                     ui.plot_lines(im_str!("bla"), &a).build();
                 });
         });

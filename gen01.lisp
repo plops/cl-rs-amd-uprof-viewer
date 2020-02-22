@@ -364,18 +364,19 @@ positioned-io = \"*\"
 				      "Condition::FirstUseEver")
 				(build ui
 				       (lambda ()
-					 (let ((hm (history.clone))
-					       (h (dot hm
-						       (lock)
-						       (unwrap)))
-					       ;(v (std--vec--Vec--from h))
-					       )
-					   (let ((a "[1.0,2.0,3.0]"))
-					     (declare (type (array f32 3) a))
-					     (dot ui (plot_lines
-						   (im_str! (string "bla"))
-						   &a)
-						  (build)))
+					 (let* (
+						(i 0))
+					   (let ((h_guard (dot history (lock) (unwrap)))
+						 (h (dot h_guard
+							 (iter))))
+					     (let* ((a "vec![0.0f32;h.len()]"))
+					       (for (e h)
+						   (setf (aref a i) (coerce e.1 f32))
+						   (incf i))
+					       (dot ui (plot_lines
+							(im_str! (string "bla"))
+							&a)
+						    (build))))
 					   #+nil
 					   (ui.text (im_str! (string "recv"))))))))))))))))
 
