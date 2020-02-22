@@ -372,10 +372,10 @@ positioned-io = \"*\"
 					       )
 					   (let ((a "[1.0,2.0,3.0]"))
 					     (declare (type (array f32 3) a))
-					    (PlotLines--new
-					     ui
-					     (im_str! (string "bla"))
-					     &a))
+					     (dot ui (plot_lines
+						   (im_str! (string "bla"))
+						   &a)
+						  (build)))
 					   #+nil
 					   (ui.text (im_str! (string "recv"))))))))))))))))
 

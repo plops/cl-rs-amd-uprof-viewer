@@ -275,7 +275,7 @@ fn main() {
                     let hm = history.clone();
                     let h = hm.lock().unwrap();
                     let a: [f32; (3)] = [1.0, 2.0, 3.0];
-                    PlotLines::new(ui, im_str!("bla"), &a);
+                    ui.plot_lines(im_str!("bla"), &a).build();
                 });
         });
     }
