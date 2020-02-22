@@ -27,3 +27,14 @@ The readout is surprisingly fast. The doc folder contains a screen capture (pic 
 [[https://raw.githubusercontent.com/plops/cl-rs-amd-uprof-viewer/master/doc/2020-02-22-182729_908x288_scrot.png]]
 
 The graphs on the left show 900 samples. The two numbers on the right give the minimum and maximum values.
+
+Note: Currently, the hwmon files are hardcoded to be the files in my system:
+
+
+martin@labolg ~/stage/cl-rs-amd-uprof-viewer/code_zenpower $ ls /sys/class/hwmon/hwmon0/*_{input,label}
+/sys/class/hwmon/hwmon0/curr1_input  /sys/class/hwmon/hwmon0/in2_input	   /sys/class/hwmon/hwmon0/temp1_input
+/sys/class/hwmon/hwmon0/curr1_label  /sys/class/hwmon/hwmon0/in2_label	   /sys/class/hwmon/hwmon0/temp1_label
+/sys/class/hwmon/hwmon0/curr2_input  /sys/class/hwmon/hwmon0/power1_input  /sys/class/hwmon/hwmon0/temp2_input
+/sys/class/hwmon/hwmon0/curr2_label  /sys/class/hwmon/hwmon0/power1_label  /sys/class/hwmon/hwmon0/temp2_label
+/sys/class/hwmon/hwmon0/in1_input    /sys/class/hwmon/hwmon0/power2_input  /sys/class/hwmon/hwmon0/temp3_input
+/sys/class/hwmon/hwmon0/in1_label    /sys/class/hwmon/hwmon0/power2_label  /sys/class/hwmon/hwmon0/temp3_label
