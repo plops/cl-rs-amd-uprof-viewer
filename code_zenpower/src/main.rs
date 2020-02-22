@@ -152,106 +152,131 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
     return Ok(res);
 }
 fn main() {
-    let (s, r) = crossbeam_channel::unbounded();
+    let (s, r) = crossbeam_channel::bounded(4);
     let history = std::sync::Arc::new(Mutex::new(VecDeque::with_capacity(100)));
-    spawn(move || {
-        loop {
-            let history = history.clone();
-            let tup = r.recv().ok().unwrap();
-            let mut h = history.lock().unwrap();
-            h.push_back(tup);
-        }
-    });
-    let b = std::thread::Builder::new().name("hwmon_reader".into());
-    b.spawn(move || {
-        let f_SVI2_C_Core =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input").unwrap();
-        let f_SVI2_C_SoC =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input").unwrap();
-        let f_SVI2_Core =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input").unwrap();
-        let f_SVI2_SoC =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input").unwrap();
-        let f_SVI2_P_Core =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input").unwrap();
-        let f_SVI2_P_SoC =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input").unwrap();
-        let f_Tdie =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input").unwrap();
-        let f_Tctl =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input").unwrap();
-        let f_Tccd1 =
-            File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input").unwrap();
-        loop {
-            let mut buf_SVI2_C_Core = [0; 32];
-            let mut buf_SVI2_C_SoC = [0; 32];
-            let mut buf_SVI2_Core = [0; 32];
-            let mut buf_SVI2_SoC = [0; 32];
-            let mut buf_SVI2_P_Core = [0; 32];
-            let mut buf_SVI2_P_SoC = [0; 32];
-            let mut buf_Tdie = [0; 32];
-            let mut buf_Tctl = [0; 32];
-            let mut buf_Tccd1 = [0; 32];
-            let _bytes_SVI2_C_Core = f_SVI2_C_Core
-                .read_at(0, &mut buf_SVI2_C_Core)
-                .expect("read_at SVI2_C_Core fail");
-            let _bytes_SVI2_C_SoC = f_SVI2_C_SoC
-                .read_at(0, &mut buf_SVI2_C_SoC)
-                .expect("read_at SVI2_C_SoC fail");
-            let _bytes_SVI2_Core = f_SVI2_Core
-                .read_at(0, &mut buf_SVI2_Core)
-                .expect("read_at SVI2_Core fail");
-            let _bytes_SVI2_SoC = f_SVI2_SoC
-                .read_at(0, &mut buf_SVI2_SoC)
-                .expect("read_at SVI2_SoC fail");
-            let _bytes_SVI2_P_Core = f_SVI2_P_Core
-                .read_at(0, &mut buf_SVI2_P_Core)
-                .expect("read_at SVI2_P_Core fail");
-            let _bytes_SVI2_P_SoC = f_SVI2_P_SoC
-                .read_at(0, &mut buf_SVI2_P_SoC)
-                .expect("read_at SVI2_P_SoC fail");
-            let _bytes_Tdie = f_Tdie.read_at(0, &mut buf_Tdie).expect("read_at Tdie fail");
-            let _bytes_Tctl = f_Tctl.read_at(0, &mut buf_Tctl).expect("read_at Tctl fail");
-            let _bytes_Tccd1 = f_Tccd1
-                .read_at(0, &mut buf_Tccd1)
-                .expect("read_at Tccd1 fail");
-            let v_SVI2_C_Core = read_int(&mut buf_SVI2_C_Core).expect("read_int SVI2_C_Core error");
-            let v_SVI2_C_SoC = read_int(&mut buf_SVI2_C_SoC).expect("read_int SVI2_C_SoC error");
-            let v_SVI2_Core = read_int(&mut buf_SVI2_Core).expect("read_int SVI2_Core error");
-            let v_SVI2_SoC = read_int(&mut buf_SVI2_SoC).expect("read_int SVI2_SoC error");
-            let v_SVI2_P_Core = read_int(&mut buf_SVI2_P_Core).expect("read_int SVI2_P_Core error");
-            let v_SVI2_P_SoC = read_int(&mut buf_SVI2_P_SoC).expect("read_int SVI2_P_SoC error");
-            let v_Tdie = read_int(&mut buf_Tdie).expect("read_int Tdie error");
-            let v_Tctl = read_int(&mut buf_Tctl).expect("read_int Tctl error");
-            let v_Tccd1 = read_int(&mut buf_Tccd1).expect("read_int Tccd1 error");
-            s.send((
-                Utc::now(),
-                v_SVI2_C_Core,
-                v_SVI2_C_SoC,
-                v_SVI2_Core,
-                v_SVI2_SoC,
-                v_SVI2_P_Core,
-                v_SVI2_P_SoC,
-                v_Tdie,
-                v_Tctl,
-                v_Tccd1,
-            ))
-            .unwrap();
-        }
-    });
-    let system = init(file!());
-    system.main_loop(move |_, ui| {
-        Window::new(im_str!("Hello world"))
-            .size([3.00e+2, 1.00e+2], Condition::FirstUseEver)
-            .build(ui, || {
-                ui.text(im_str!("Hello World"));
-                let mouse_pos = ui.io().mouse_pos;
-                ui.text(format!("mouse: ({:.1},{:.1})", mouse_pos[0], mouse_pos[1]));
-            });
-        Window::new(im_str!("recv"))
-            .size([2.00e+2, 1.00e+2], Condition::FirstUseEver)
-            .build(ui, || {
-                ui.text(im_str!("recv"));
-            });
-    });
+    {
+        let b = std::thread::Builder::new().name("deque_writer".into());
+        let history = history.clone();
+        b.spawn(move || {
+            loop {
+                let tup = r.recv().ok().unwrap();
+                let mut h = history.lock().unwrap();
+                h.push_back(tup);
+                if 100 < h.len() {
+                    h.pop_front();
+                };
+            }
+        });
+    }
+    {
+        let b = std::thread::Builder::new().name("hwmon_reader".into());
+        b.spawn(move || {
+            let f_SVI2_C_Core =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input")
+                    .unwrap();
+            let f_SVI2_C_SoC =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr2_input")
+                    .unwrap();
+            let f_SVI2_Core =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in1_input").unwrap();
+            let f_SVI2_SoC =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/in2_input").unwrap();
+            let f_SVI2_P_Core =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power1_input")
+                    .unwrap();
+            let f_SVI2_P_SoC =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/power2_input")
+                    .unwrap();
+            let f_Tdie =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp1_input")
+                    .unwrap();
+            let f_Tctl =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp2_input")
+                    .unwrap();
+            let f_Tccd1 =
+                File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/temp3_input")
+                    .unwrap();
+            loop {
+                let mut buf_SVI2_C_Core = [0; 32];
+                let mut buf_SVI2_C_SoC = [0; 32];
+                let mut buf_SVI2_Core = [0; 32];
+                let mut buf_SVI2_SoC = [0; 32];
+                let mut buf_SVI2_P_Core = [0; 32];
+                let mut buf_SVI2_P_SoC = [0; 32];
+                let mut buf_Tdie = [0; 32];
+                let mut buf_Tctl = [0; 32];
+                let mut buf_Tccd1 = [0; 32];
+                let _bytes_SVI2_C_Core = f_SVI2_C_Core
+                    .read_at(0, &mut buf_SVI2_C_Core)
+                    .expect("read_at SVI2_C_Core fail");
+                let _bytes_SVI2_C_SoC = f_SVI2_C_SoC
+                    .read_at(0, &mut buf_SVI2_C_SoC)
+                    .expect("read_at SVI2_C_SoC fail");
+                let _bytes_SVI2_Core = f_SVI2_Core
+                    .read_at(0, &mut buf_SVI2_Core)
+                    .expect("read_at SVI2_Core fail");
+                let _bytes_SVI2_SoC = f_SVI2_SoC
+                    .read_at(0, &mut buf_SVI2_SoC)
+                    .expect("read_at SVI2_SoC fail");
+                let _bytes_SVI2_P_Core = f_SVI2_P_Core
+                    .read_at(0, &mut buf_SVI2_P_Core)
+                    .expect("read_at SVI2_P_Core fail");
+                let _bytes_SVI2_P_SoC = f_SVI2_P_SoC
+                    .read_at(0, &mut buf_SVI2_P_SoC)
+                    .expect("read_at SVI2_P_SoC fail");
+                let _bytes_Tdie = f_Tdie.read_at(0, &mut buf_Tdie).expect("read_at Tdie fail");
+                let _bytes_Tctl = f_Tctl.read_at(0, &mut buf_Tctl).expect("read_at Tctl fail");
+                let _bytes_Tccd1 = f_Tccd1
+                    .read_at(0, &mut buf_Tccd1)
+                    .expect("read_at Tccd1 fail");
+                let v_SVI2_C_Core =
+                    read_int(&mut buf_SVI2_C_Core).expect("read_int SVI2_C_Core error");
+                let v_SVI2_C_SoC =
+                    read_int(&mut buf_SVI2_C_SoC).expect("read_int SVI2_C_SoC error");
+                let v_SVI2_Core = read_int(&mut buf_SVI2_Core).expect("read_int SVI2_Core error");
+                let v_SVI2_SoC = read_int(&mut buf_SVI2_SoC).expect("read_int SVI2_SoC error");
+                let v_SVI2_P_Core =
+                    read_int(&mut buf_SVI2_P_Core).expect("read_int SVI2_P_Core error");
+                let v_SVI2_P_SoC =
+                    read_int(&mut buf_SVI2_P_SoC).expect("read_int SVI2_P_SoC error");
+                let v_Tdie = read_int(&mut buf_Tdie).expect("read_int Tdie error");
+                let v_Tctl = read_int(&mut buf_Tctl).expect("read_int Tctl error");
+                let v_Tccd1 = read_int(&mut buf_Tccd1).expect("read_int Tccd1 error");
+                s.send((
+                    Utc::now(),
+                    v_SVI2_C_Core,
+                    v_SVI2_C_SoC,
+                    v_SVI2_Core,
+                    v_SVI2_SoC,
+                    v_SVI2_P_Core,
+                    v_SVI2_P_SoC,
+                    v_Tdie,
+                    v_Tctl,
+                    v_Tccd1,
+                ))
+                .unwrap();
+            }
+        });
+    };
+    {
+        let system = init(file!());
+        let history = history.clone();
+        system.main_loop(move |_, ui| {
+            Window::new(im_str!("Hello world"))
+                .size([3.00e+2, 1.00e+2], Condition::FirstUseEver)
+                .build(ui, || {
+                    ui.text(im_str!("Hello World"));
+                    let mouse_pos = ui.io().mouse_pos;
+                    ui.text(format!("mouse: ({:.1},{:.1})", mouse_pos[0], mouse_pos[1]));
+                });
+            Window::new(im_str!("recv"))
+                .size([2.00e+2, 1.00e+2], Condition::FirstUseEver)
+                .build(ui, || {
+                    let hm = history.clone();
+                    let h = hm.lock().unwrap();
+                    let a: [f32; (3)] = [1.0, 2.0, 3.0];
+                    PlotLines::new(ui, im_str!("bla"), &a);
+                });
+        });
+    }
 }

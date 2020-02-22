@@ -277,105 +277,107 @@ positioned-io = \"*\"
 					      (string "int reader fail")))))))
 	       (return (Ok res)))))
 	   (defun main ()
-
-	     (let (((values s r) ;(crossbeam_channel--bounded 0)
-		    (crossbeam_channel--unbounded)
-		    )
+	     (let (((values s r) (crossbeam_channel--bounded 4))
 		   (history (std--sync--Arc--new (Mutex--new (VecDeque--with_capacity 100)))))
-		   #+nil (declare (type ,(format nil "VecDeque<(DateTime<Utc>, ~{~a~^,~})>"
-					   (loop for f in  *hwmon-files* collect "u64"))
-					history))
-		   (spawn
+	       (progn
+		 (let ((b (dot (std--thread--Builder--new)
+			       (name (dot (string "deque_writer")
+					  (into)))))
+		       (history (dot history (clone))))
+		   (b.spawn
 		    (space move
 			   (lambda ()
 			     (loop
-			      (let ((history (dot history
-						  (clone)))
-				    (tup (dot r
-					      (recv)
-					      (ok)
-					      (unwrap))))
-				(let* ((h (dot history
-					       (lock)
-					       (unwrap))))
-				  (dot
-				   h
-				   (push_back tup))
-					;,(logprint "hist" `((history.len)))
-				  #+nil (for (tup h)
-					     ,(logprint "" `( tup.0 tup.1
-								    #+nil (? tup ;(aref tup 0)
-									     ) )))))))))
-		   
+				(let ((tup (dot r
+						(recv)
+						(ok)
+						(unwrap))))
+				  (let* ((h (dot history
+						 (lock)
+						 (unwrap))))
+				    (dot
+				     h
+				     (push_back tup))
+				    (when (< 100 (h.len))
+				      (h.pop_front))))))))))
+	       
 
-		   (let ((b (dot (std--thread--Builder--new)
-				 (name (dot (string "hwmon_reader")
-					    (into))))))
-		    (b.spawn
-		     (space
-		      move
-		      (lambda ()
-			(do0
-			 (let (,@(loop for (name f) in *hwmon-files*
-				    and i_ from 0 collect
-				      `(,(format nil "f_~a" name) (dot (File--open (string ,f))
-								       (unwrap)))))
-			   (loop
-			      (let* (,@(loop for (name f) in *hwmon-files* and ii from 0 collect
-					    `(,(format nil "buf_~a" name) "[0; 32]")))
-				(let (,@(loop for (name f) in *hwmon-files* and iii from 0 collect
-					     `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
-										   (read_at 0 ,(format nil "&mut buf_~a" name))
-										   (expect (string ,(format nil "read_at ~a fail" name)))))))
-				  (let (,@(loop for (name f) in *hwmon-files* and iiii from 0 collect
-					       `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
-										(expect (string ,(format nil "read_int ~a error" name)))))))
-				    #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
-							     (format nil "v_~a" name)))
-				    (dot s
-					 (send
-					  (values (Utc--now)
-						  ,@(loop for (name f) in *hwmon-files* and i from 0 collect
-							 (format nil "v_~a" name))))
-					 (unwrap)))))))))))))
-	       #+nil (let* ((client (request--Client--new))
-			    (body (dot client
-				       (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))
-				       (? await)
-				       (text)
-				       (? await))))
-		       
-		       ,(logprint "stock" `(body)))
-	       (let ((system (init (file!))))
-
-
-		 (system.main_loop
-		    (space  move
-			    (lambda (_ ui)
-			      
-			      (dot ("Window::new" (im_str! (string "Hello world")))
-				   (size (list 300.0 100.0)
-					 "Condition::FirstUseEver")
-				   (build ui
-					  (lambda ()
-					    (ui.text (im_str! (string "Hello World")))
-					    (let ((mouse_pos (dot ui
-								  (io)
-								  mouse_pos)))
-					      (ui.text (format!
-							(string "mouse: ({:.1},{:.1})"
-								)
-							(aref mouse_pos 0)
-							(aref mouse_pos 1)))
-					      ))))
-			      (dot ("Window::new" (im_str! (string "recv")))
-				   (size (list 200.0 100.0)
-					 "Condition::FirstUseEver")
-				   (build ui
-					  (lambda ()
-					    (ui.text (im_str! (string "recv")))
-					    ))))))
-		 )))))
+	       (progn
+		 (let ((b (dot (std--thread--Builder--new)
+			       (name (dot (string "hwmon_reader")
+					  (into))))))
+		   (b.spawn
+		    (space
+		     move
+		     (lambda ()
+		       (do0
+			(let (,@(loop for (name f) in *hwmon-files*
+				   and i_ from 0 collect
+				     `(,(format nil "f_~a" name) (dot (File--open (string ,f))
+								      (unwrap)))))
+			  (loop
+			     (let* (,@(loop for (name f) in *hwmon-files* and ii from 0 collect
+					   `(,(format nil "buf_~a" name) "[0; 32]")))
+			       (let (,@(loop for (name f) in *hwmon-files* and iii from 0 collect
+					    `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
+										  (read_at 0 ,(format nil "&mut buf_~a" name))
+										  (expect (string ,(format nil "read_at ~a fail" name)))))))
+				 (let (,@(loop for (name f) in *hwmon-files* and iiii from 0 collect
+					      `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
+									       (expect (string ,(format nil "read_int ~a error" name)))))))
+				   #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
+							    (format nil "v_~a" name)))
+				   (dot s
+					(send
+					 (values (Utc--now)
+						 ,@(loop for (name f) in *hwmon-files* and i from 0 collect
+							(format nil "v_~a" name))))
+					(unwrap))))))))))))))
+	     #+nil (let* ((client (request--Client--new))
+			  (body (dot client
+				     (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))
+				     (? await)
+				     (text)
+				     (? await))))
+		     
+		     ,(logprint "stock" `(body)))
+	     (progn
+	      (let ((system (init (file!)))
+		    (history (dot history (clone))))
+		(system.main_loop
+		 (space  move
+			 (lambda (_ ui)
+			   (dot ("Window::new" (im_str! (string "Hello world")))
+				(size (list 300.0 100.0) "Condition::FirstUseEver")
+				(build ui
+				       (lambda ()
+					 (ui.text (im_str! (string "Hello World")))
+					 (let ((mouse_pos (dot ui
+							       (io)
+							       mouse_pos)))
+					   (ui.text (format!
+						     (string "mouse: ({:.1},{:.1})")
+						     (aref mouse_pos 0)
+						     (aref mouse_pos 1)))))))
+			   (dot ("Window::new" (im_str! (string "recv")))
+				(size (list 200.0 100.0)
+				      "Condition::FirstUseEver")
+				(build ui
+				       (lambda ()
+					 (let ((hm (history.clone))
+					       (h (dot hm
+						       (lock)
+						       (unwrap)))
+					       ;(v (std--vec--Vec--from h))
+					       )
+					   (let ((a "[1.0,2.0,3.0]"))
+					     (declare (type (array f32 3) a))
+					    (PlotLines--new
+					     ui
+					     (im_str! (string "bla"))
+					     &a))
+					   #+nil
+					   (ui.text (im_str! (string "recv"))))))))))))))))
 
     
     
