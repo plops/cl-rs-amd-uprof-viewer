@@ -13,6 +13,8 @@ use positioned_io::ReadAt;
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io;
+use std::sync::Mutex;
+use std::thread::spawn;
 use std::time::Instant;
 use std::{fs, thread, time};
 struct System {
@@ -151,7 +153,14 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
 }
 fn main() {
     let (s, r) = bounded(0);
-    thread::spawn(move || {
+    let history = std::sync::Arc::new(Mutex::new(VecDeque::with_capacity(100)));
+    spawn(move || {
+        let tup = r.recv().ok().unwrap();
+        let history = history.clone();
+        let mut h = history.lock().unwrap();
+        h.push_back(tup);
+    });
+    spawn(move || {
         let f_SVI2_C_Core =
             File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input").unwrap();
         let f_SVI2_C_SoC =
@@ -228,32 +237,7 @@ fn main() {
         }
     });
     let system = init(file!());
-    let mut history: VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)> =
-        VecDeque::with_capacity(100);
     system.main_loop(move |_, ui| {
-        let tup = r.recv().unwrap();
-        history.push_back(tup);
-        {
-            println!(
-                "{} {}:{} hist  history.len()={}",
-                Utc::now(),
-                file!(),
-                line!(),
-                history.len()
-            );
-        }
-        for tup in history {
-            {
-                println!(
-                    "{} {}:{}   tup.0={}  tup.1={}",
-                    Utc::now(),
-                    file!(),
-                    line!(),
-                    tup.0,
-                    tup.1
-                );
-            }
-        }
         Window::new(im_str!("Hello world"))
             .size([3.00e+2, 1.00e+2], Condition::FirstUseEver)
             .build(ui, || {

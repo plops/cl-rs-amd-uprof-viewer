@@ -13,6 +13,21 @@
   (defparameter *code-file*
     (merge-pathnames #P"src/main.rs"
 		     *source-dir*))
+  (defparameter *hwmon-files*
+    (let* ((dir #P"/sys/class/hwmon/hwmon0/")
+	   (paths (directory (merge-pathnames "*input" dir))))
+      (loop for path in paths collect
+	   (let* ((prefix (elt (cl-ppcre:split "_"
+					       (pathname-name path))
+			       0))
+		  (label-file (merge-pathnames (format nil "~a_label" prefix)
+					       dir)))
+	     (list (if (probe-file label-file)
+		       (with-open-file (s label-file)
+			 (read s))
+		       prefix)
+		   path)))))
+  
   (defun logprint (msg &optional (rest nil))
     `(progn
        (println! (string ,(format nil "{} {}:{} ~a ~{~a~^ ~}"
@@ -54,22 +69,17 @@ imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
-"
-	    
+"))
 
-
-	    ))
-
+  
   
   (let ((code
 	 `(do0
 	   (do0
-
+	    (use (std thread spawn))
 	    (use (std io))
-	    
 	    (use
 	     (chrono (curly DateTime Utc)))
-	    
 	    "use imgui::*;"
 	    ,@(loop for e in `("glutin"
 			       "glutin::event::{Event,WindowEvent}"
@@ -84,11 +94,11 @@ positioned-io = \"*\"
 	   (use (std (curly thread time fs))
 		(std fs File)
 		(std time Instant)
-		(positioned_io ReadAt)
-		)
+		(positioned_io ReadAt))
 
 	   (use (crossbeam_channel bounded)
-		(std collections VecDeque))
+		(std collections VecDeque)
+		(std sync Mutex))
 	   
 
 	   ;(chrono::datetime::DateTime<chrono::offset::utc::Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)
@@ -265,105 +275,105 @@ positioned-io = \"*\"
 					     (io--Error--new
 					      io--ErrorKind--Other
 					      (string "int reader fail")))))))
-	       (return (Ok res))))
-	     )
+	       (return (Ok res)))))
 	   (defun main ()
 
-	     (let (((values s r) (bounded 0)))
-	       (thread--spawn
-		(space
-		 move
-		 (lambda ()
-		   ,(let ((files (let* ((dir #P"/sys/class/hwmon/hwmon0/")
-					(paths (directory (merge-pathnames "*input" dir)))
-					)
-				   (loop for path in paths collect
-					(let* ((prefix (elt (cl-ppcre:split "_"
-									    (pathname-name path))
-							    0))
-					       (label-file (merge-pathnames (format nil "~a_label" prefix)
-									    dir)))
-					  (list (with-open-file (s label-file)
-						  (read s))
-						path))))))
-		      `(do0
-			(let (,@(loop for (name f) in files and i from 0 collect
+	     (let (((values s r) (bounded 0))
+		   (history (std--sync--Arc--new (Mutex--new (VecDeque--with_capacity 100)))))
+		   #+nil (declare (type ,(format nil "VecDeque<(DateTime<Utc>, ~{~a~^,~})>"
+					   (loop for f in  *hwmon-files* collect "u64"))
+					history))
+		   (spawn
+		    (space move
+			   (lambda ()
+			     (let ((tup (dot r
+					     (recv)
+					     (ok)
+					     (unwrap))))
+			       (let ((history (dot history
+						   (clone))))
+				(let* ((h (dot history
+					       (lock)
+					       (unwrap))))
+				  (dot
+				   h
+				   (push_back tup))
+					;,(logprint "hist" `((history.len)))
+				  #+nil (for (tup h)
+					     ,(logprint "" `( tup.0 tup.1
+								    #+nil (? tup ;(aref tup 0)
+									     ) )))))))))
+		   
+
+
+		   
+		   (spawn
+		    (space
+		     move
+		     (lambda ()
+		       (do0
+			(let (,@(loop for (name f) in *hwmon-files*
+				   and i_ from 0 collect
 				     `(,(format nil "f_~a" name) (dot (File--open (string ,f))
 								      (unwrap)))))
 			  (loop
-			     (let* (,@(loop for (name f) in files and i from 0 collect
+			     (let* (,@(loop for (name f) in *hwmon-files* and ii from 0 collect
 					   `(,(format nil "buf_~a" name) "[0; 32]")))
-			       (let (,@(loop for (name f) in files and i from 0 collect
+			       (let (,@(loop for (name f) in *hwmon-files* and iii from 0 collect
 					    `(,(format nil "_bytes_~a" name) (dot ,(format nil "f_~a" name)
 										  (read_at 0 ,(format nil "&mut buf_~a" name))
 										  (expect (string ,(format nil "read_at ~a fail" name)))))))
-				 (let (,@(loop for (name f) in files and i from 0 collect
+				 (let (,@(loop for (name f) in *hwmon-files* and iiii from 0 collect
 					      `(,(format nil "v_~a" name) (dot (read_int ,(format nil "&mut buf_~a" name))
 									       (expect (string ,(format nil "read_int ~a error" name)))))))
-				    #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
+				   #+nil ,(logprint "" (loop for (name f) in files and i from 0 collect
 							    (format nil "v_~a" name)))
 				   (dot s
 					(send
 					 (values (Utc--now)
-						 ,@(loop for (name f) in files and i from 0 collect
-						      (format nil "v_~a" name))))
-					(unwrap)))))))))))))
-	     
-	     
-	     
-	     #+nil (let* ((client (request--Client--new))
-		    (body (dot client
-			       (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))
-			       (? await)
-			       (text)
-			       (? await))))
-	       
-	       ,(logprint "stock" `(body)))
-	     (let ((system (init (file!))))
-	       (let* ((history (VecDeque--with_capacity 100)))
-		 (declare (type "VecDeque<(DateTime<Utc>, u64, u64, u64, u64, u64, u64, u64, u64, u64)>"
-					   history))
-		(system.main_loop
-		 (space  move
-			(lambda (_ ui)
-			  (let ((tup (dot r
-							  (recv)
-							  (unwrap))))
-					    (dot
-					     history
-					     (push_back tup))
-					    ,(logprint "hist" `((history.len)))
-					    (for (tup history)
-						 ,(logprint "" `( tup.0 tup.1
-									#+nil (? tup ;(aref tup 0)
-										 ) ))))
-			  (dot ("Window::new" (im_str! (string "Hello world")))
-			       (size (list 300.0 100.0)
-				     "Condition::FirstUseEver")
-			       (build ui
-				      (lambda ()
-					(ui.text (im_str! (string "Hello World")))
-					(let ((mouse_pos (dot ui
-							      (io)
-							      mouse_pos)))
-					  (ui.text (format!
-						    (string "mouse: ({:.1},{:.1})"
-							    )
-						    (aref mouse_pos 0)
-						    (aref mouse_pos 1)))
-					  ))))
-			  (dot ("Window::new" (im_str! (string "recv")))
-			       (size (list 200.0 100.0)
-				     "Condition::FirstUseEver")
-			       (build ui
-				      (lambda ()
-					(ui.text (im_str! (string "recv")))
-					))))))))))))
+						 ,@(loop for (name f) in *hwmon-files* and i from 0 collect
+							(format nil "v_~a" name))))
+					(unwrap))))))))))))
+	       #+nil (let* ((client (request--Client--new))
+			    (body (dot client
+				       (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))
+				       (? await)
+				       (text)
+				       (? await))))
+		       
+		       ,(logprint "stock" `(body)))
+	       (let ((system (init (file!))))
+
+
+		 (system.main_loop
+		    (space  move
+			    (lambda (_ ui)
+			      
+			      (dot ("Window::new" (im_str! (string "Hello world")))
+				   (size (list 300.0 100.0)
+					 "Condition::FirstUseEver")
+				   (build ui
+					  (lambda ()
+					    (ui.text (im_str! (string "Hello World")))
+					    (let ((mouse_pos (dot ui
+								  (io)
+								  mouse_pos)))
+					      (ui.text (format!
+							(string "mouse: ({:.1},{:.1})"
+								)
+							(aref mouse_pos 0)
+							(aref mouse_pos 1)))
+					      ))))
+			      (dot ("Window::new" (im_str! (string "recv")))
+				   (size (list 200.0 100.0)
+					 "Condition::FirstUseEver")
+				   (build ui
+					  (lambda ()
+					    (ui.text (im_str! (string "recv")))
+					    ))))))
+		 )))))
 
     
     
     (write-source *code-file*
 		  code)))
-
-
-
