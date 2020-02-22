@@ -369,7 +369,7 @@ positioned-io = \"*\"
 					       (h (dot h_guard
 						       (iter))))
 					   (let* ((time "vec![Utc::now();h.len()]")
-						  (time_prime "vec![0.0f32;h.len()]")
+						  (data_time "vec![0.0f32;h.len()]")
 						  ,@(loop for (name f) in *hwmon-files* and j from 0 collect
 							 `(,(format nil "data_~a" name) "vec![0.0f32;h.len()]")))
 
@@ -377,7 +377,7 @@ positioned-io = \"*\"
 					       (for (e h)
 						    (setf (aref time i) e.0)
 						    (if (== 0 i)
-							(setf (aref time_prime i) 0s0)
+							(setf (aref data_time i) 0s0)
 							(let ((duration #+nil
 								(dot (aref time i)
 									     (signed_duration_since
@@ -386,17 +386,19 @@ positioned-io = \"*\"
 								   (aref time (- i 1)))))
 							  ;; (as_fractional_millis)
 							  ;; (as_seconds)
-							  (setf (aref time_prime i) (coerce
-										     duration
-										     
+							  (setf (aref data_time i) (coerce
+										     (dot
+										      duration
+										      (num_milliseconds))
 										     f32)))) 
 						,@(loop for (name f) in *hwmon-files* and j from 0 collect
 						       `(do0
 							  (setf (aref ,(format nil "data_~a" name) i) (coerce (dot e ,(+ 1 j)) f32))))
 						(incf i)))
 					     
-					     ,@(loop for (name f) in *hwmon-files*
-						  and j from 0 collect
+					     ,@(loop for (name f) in (append *hwmon-files*
+									     `(("time" "_")))
+						  collect
 						    (let ((dat (format nil "data_~a" name)))
 						     `(progn
 							(let* ((mi (aref ,dat 0))

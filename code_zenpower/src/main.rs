@@ -275,7 +275,7 @@ fn main() {
                     let h_guard = history.lock().unwrap();
                     let h = h_guard.iter();
                     let mut time = vec![Utc::now(); h.len()];
-                    let mut time_prime = vec![0.0f32; h.len()];
+                    let mut data_time = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_Core = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_SoC = vec![0.0f32; h.len()];
                     let mut data_SVI2_Core = vec![0.0f32; h.len()];
@@ -289,11 +289,10 @@ fn main() {
                     for e in h {
                         time[i] = e.0;
                         if (0) == (i) {
-                            time_prime[i] = 0.;
+                            data_time[i] = 0.;
                         } else {
                             let duration = (time[i] - time[(i - 1)]);
-			    let a = duration.s
-                            //time_prime[i]
+                            data_time[i] = (duration.num_milliseconds() as f32);
                         }
                         data_SVI2_C_Core[i] = (e.1 as f32);
                         data_SVI2_C_SoC[i] = (e.2 as f32);
@@ -431,6 +430,20 @@ fn main() {
                         }
                         let label = im_str!("Tccd1 {:?} {:?}", mi, ma);
                         ui.plot_lines(&label, &(data_Tccd1)).build();
+                    }
+                    {
+                        let mut mi = data_time[0];
+                        let mut ma = data_time[0];
+                        for e in &(data_time) {
+                            if *e < mi {
+                                mi = *e;
+                            };
+                            if ma < *e {
+                                ma = *e;
+                            };
+                        }
+                        let label = im_str!("time {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_time)).build();
                     };
                 });
         });
