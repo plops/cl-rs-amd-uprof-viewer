@@ -298,7 +298,7 @@ positioned-io = \"*\"
 				    (dot
 				     h
 				     (push_back tup))
-				    (when (< 3900 (h.len))
+				    (when (< 1200 (h.len))
 				      (h.pop_front))))))))))
 	       
 
@@ -369,7 +369,7 @@ positioned-io = \"*\"
 					       (h (dot h_guard
 						       (iter))))
 					   (let* ((time "vec![Utc::now();h.len()]")
-						  (data_time "vec![0.0f32;h.len()]")
+						  (data_time_between_samples_ms "vec![0.0f32;h.len()]")
 						  ,@(loop for (name f) in *hwmon-files* and j from 0 collect
 							 `(,(format nil "data_~a" name) "vec![0.0f32;h.len()]")))
 
@@ -377,7 +377,7 @@ positioned-io = \"*\"
 					       (for (e h)
 						    (setf (aref time i) e.0)
 						    (if (== 0 i)
-							(setf (aref data_time i) 0s0)
+							(setf (aref data_time_between_samples_ms i) 0s0)
 							(let ((duration #+nil
 								(dot (aref time i)
 									     (signed_duration_since
@@ -390,10 +390,10 @@ positioned-io = \"*\"
 								   duration
 								   (num_nanoseconds))
 							    ((Some a)
-							     (setf (aref data_time i)
-								   (coerce
-								    a
-								    f32)
+							     (setf (aref data_time_between_samples_ms i)
+								   (* 1e-6 (coerce
+								     a
+								     f32))
 								   ))
 							    (t )))) 
 						    ,@(loop for (name f) in *hwmon-files* and j from 0 collect
@@ -402,7 +402,7 @@ positioned-io = \"*\"
 						(incf i)))
 					     
 					     ,@(loop for (name f) in (append *hwmon-files*
-									     `(("time" "_")))
+									     `(("time_between_samples_ms" "_")))
 						  collect
 						    (let ((dat (format nil "data_~a" name)))
 						     `(progn

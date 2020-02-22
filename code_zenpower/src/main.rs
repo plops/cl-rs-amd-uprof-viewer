@@ -162,7 +162,7 @@ fn main() {
                 let tup = r.recv().ok().unwrap();
                 let mut h = history.lock().unwrap();
                 h.push_back(tup);
-                if 3900 < h.len() {
+                if 1200 < h.len() {
                     h.pop_front();
                 };
             }
@@ -275,7 +275,7 @@ fn main() {
                     let h_guard = history.lock().unwrap();
                     let h = h_guard.iter();
                     let mut time = vec![Utc::now(); h.len()];
-                    let mut data_time = vec![0.0f32; h.len()];
+                    let mut data_time_between_samples_ms = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_Core = vec![0.0f32; h.len()];
                     let mut data_SVI2_C_SoC = vec![0.0f32; h.len()];
                     let mut data_SVI2_Core = vec![0.0f32; h.len()];
@@ -289,12 +289,12 @@ fn main() {
                     for e in h {
                         time[i] = e.0;
                         if (0) == (i) {
-                            data_time[i] = 0.;
+                            data_time_between_samples_ms[i] = 0.;
                         } else {
                             let duration = (time[i] - time[(i - 1)]);
                             match duration.num_nanoseconds() {
                                 Some(a) => {
-                                    data_time[i] = (a as f32);
+                                    data_time_between_samples_ms[i] = ((1.00e-6) * (a as f32));
                                 }
                                 _ => {}
                             };
@@ -437,9 +437,9 @@ fn main() {
                         ui.plot_lines(&label, &(data_Tccd1)).build();
                     }
                     {
-                        let mut mi = data_time[0];
-                        let mut ma = data_time[0];
-                        for e in &(data_time) {
+                        let mut mi = data_time_between_samples_ms[0];
+                        let mut ma = data_time_between_samples_ms[0];
+                        for e in &(data_time_between_samples_ms) {
                             if *e < mi {
                                 mi = *e;
                             };
@@ -447,8 +447,9 @@ fn main() {
                                 ma = *e;
                             };
                         }
-                        let label = im_str!("time {:?} {:?}", mi, ma);
-                        ui.plot_lines(&label, &(data_time)).build();
+                        let label = im_str!("time_between_samples_ms {:?} {:?}", mi, ma);
+                        ui.plot_lines(&label, &(data_time_between_samples_ms))
+                            .build();
                     };
                 });
         });
