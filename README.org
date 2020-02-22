@@ -24,4 +24,4 @@
 
 The readout is surprisingly fast. The doc folder contains a screen capture (pic and video).
 
-![alt text](https://raw.githubusercontent.com/plops/cl-rs-amd-uprof-viewer/master/doc/2020-02-22-182729_908x288_scrot.png)
+[[https://raw.githubusercontent.com/plops/cl-rs-amd-uprof-viewer/master/doc/2020-02-22-182729_908x288_scrot.png]]
