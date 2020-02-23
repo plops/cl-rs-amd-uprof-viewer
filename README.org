@@ -39,6 +39,12 @@ martin@labolg ~/stage/cl-rs-amd-uprof-viewer/code_zenpower $ ls /sys/class/hwmon
 /sys/class/hwmon/hwmon0/in1_input    /sys/class/hwmon/hwmon0/power2_input  /sys/class/hwmon/hwmon0/temp3_input
 /sys/class/hwmon/hwmon0/in1_label    /sys/class/hwmon/hwmon0/power2_label  /sys/class/hwmon/hwmon0/temp3_label
 
+** Play with cpu affinity
+
+- core_affinity doesn't show cores that were excluded with isolcpus
+- cpu-affinity is not compiling in stable rust (syscall crate uses feature)
+- rustup default nightly
+- type error: MaximumNumberOfSignalsPending = ::libc::RLIMIT_SIGPENDING
 
 ** Possible improvements
 

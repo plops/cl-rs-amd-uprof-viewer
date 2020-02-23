@@ -69,7 +69,8 @@ imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
-core_affinity = \"*\"
+#core_affinity = \"*\"
+cpu-affinity = \"*\"
 
 
 # this shaves 1MB off the binary
@@ -82,7 +83,8 @@ panic = \"abort\"
   (let ((code
 	 `(do0
 	   (do0
-	    "extern crate core_affinity;"
+	    ;;"extern crate core_affinity;"
+	    "extern crate cpu-affinity;"
 	    (use (std thread spawn))
 	    (use (std io))
 	    (use
@@ -310,7 +312,7 @@ panic = \"abort\"
 	       
 
 	       (progn
-		 (let ((core_ids (dot (core_affinity--get_core_ids)
+		 (let (#+nil (core_ids (dot (core_affinity--get_core_ids)
 				      (unwrap))
 			 )
 		       (b (dot (std--thread--Builder--new)
@@ -318,7 +320,7 @@ panic = \"abort\"
 					  (into)))))
 		       )
 		   
-		   (for (a core_ids)
+		   #+nil (for (a core_ids)
 		     ,(logprint "affinty" `(a)))
 		   
 		   (b.spawn
