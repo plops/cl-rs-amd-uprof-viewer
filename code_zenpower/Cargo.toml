@@ -14,7 +14,7 @@ imgui-winit-support = "*"
 chrono = "*"
 crossbeam-channel = "*"
 positioned-io = "*"
-
+core_affinity = "*"
 
 
 # this shaves 1MB off the binary

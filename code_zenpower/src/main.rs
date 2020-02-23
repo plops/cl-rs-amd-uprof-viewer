@@ -1,3 +1,4 @@
+extern crate core_affinity;
 use chrono::{DateTime, Utc};
 use crossbeam_channel::bounded;
 use glium::glutin;
@@ -124,7 +125,7 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
             0 => {
                 {
                     println!(
-                        "{} {}:{} parse zero  i={}  byte={}",
+                        "{} {}:{} parse zero  i={:?}  byte={:?}",
                         Utc::now(),
                         file!(),
                         line!(),
@@ -137,7 +138,7 @@ fn read_int(data: &[u8]) -> io::Result<u64> {
             _ => {
                 {
                     println!(
-                        "{} {}:{} parse error  i={}  byte={}",
+                        "{} {}:{} parse error  i={:?}  byte={:?}",
                         Utc::now(),
                         file!(),
                         line!(),
@@ -169,7 +170,13 @@ fn main() {
         });
     }
     {
+        let core_ids = core_affinity::get_core_ids().unwrap();
         let b = std::thread::Builder::new().name("hwmon_reader".into());
+        for a in core_ids {
+            {
+                println!("{} {}:{} affinty  a={:?}", Utc::now(), file!(), line!(), a);
+            }
+        }
         b.spawn(move || {
             let f_SVI2_C_Core =
                 File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input")

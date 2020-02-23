@@ -33,7 +33,7 @@
        (println! (string ,(format nil "{} {}:{} ~a ~{~a~^ ~}"
 				  msg
 				  (loop for e in rest collect
-				       (format nil " ~a={}" (emit-rs :code e)))))
+				       (format nil " ~a={:?}" (emit-rs :code e)))))
 		 #+nil (dot (SystemTime--now)
 		      (duration_since UNIX_EPOCH)
 		      (expect (string "time went backwards"))
@@ -69,7 +69,7 @@ imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
-
+core_affinity = \"*\"
 
 
 # this shaves 1MB off the binary
@@ -82,6 +82,7 @@ panic = \"abort\"
   (let ((code
 	 `(do0
 	   (do0
+	    "extern crate core_affinity;"
 	    (use (std thread spawn))
 	    (use (std io))
 	    (use
@@ -309,9 +310,17 @@ panic = \"abort\"
 	       
 
 	       (progn
-		 (let ((b (dot (std--thread--Builder--new)
+		 (let ((core_ids (dot (core_affinity--get_core_ids)
+				      (unwrap))
+			 )
+		       (b (dot (std--thread--Builder--new)
 			       (name (dot (string "hwmon_reader")
-					  (into))))))
+					  (into)))))
+		       )
+		   
+		   (for (a core_ids)
+		     ,(logprint "affinty" `(a)))
+		   
 		   (b.spawn
 		    (space
 		     move
