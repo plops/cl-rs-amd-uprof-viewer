@@ -1,4 +1,4 @@
-extern crate cpu_affinity;
+extern crate core_affinity;
 use chrono::{DateTime, Utc};
 use crossbeam_channel::bounded;
 use glium::glutin;
@@ -170,17 +170,15 @@ fn main() {
         });
     }
     {
-        {
-            println!(
-                "{} {}:{}   cpu_affinity::LogicalCores::IsSettingThreadAffinitySupported={:?}",
-                Utc::now(),
-                file!(),
-                line!(),
-                cpu_affinity::LogicalCores::IsSettingThreadAffinitySupported
-            );
+        let core_ids = core_affinity::get_core_ids().unwrap();
+        for a in core_ids {
+            {
+                println!("{} {}:{} affinty  a={:?}", Utc::now(), file!(), line!(), a);
+            }
         }
         let b = std::thread::Builder::new().name("hwmon_reader".into());
-        b.spawn(move || {
+        let reader_thread = b.spawn(move || {
+            core_affinity::set_for_current(core_affinity::CoreId { id: 0 });
             let f_SVI2_C_Core =
                 File::open("/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon0/curr1_input")
                     .unwrap();

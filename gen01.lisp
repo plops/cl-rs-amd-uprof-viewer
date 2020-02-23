@@ -69,9 +69,9 @@ imgui-winit-support = \"*\"
 chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
-#core_affinity = \"*\"
-cpu-affinity = \"*\"
-
+core_affinity = \"*\"
+#cpu-affinity = \"*\"
+#hwloc = \"*\"
 
 # this shaves 1MB off the binary
 [profile.release]
@@ -83,8 +83,8 @@ panic = \"abort\"
   (let ((code
 	 `(do0
 	   (do0
-	    ;;"extern crate core_affinity;"
-	    "extern crate cpu_affinity;"
+	    "extern crate core_affinity;"
+	    ;;"extern crate cpu_affinity;"
 	    (use (std thread spawn))
 	    (use (std io))
 	    (use
@@ -312,9 +312,9 @@ panic = \"abort\"
 	       
 
 	       (progn
-		 ,(logprint ""
+		 #+nil ,(logprint ""
 			    `(cpu_affinity--LogicalCores--IsSettingThreadAffinitySupported))
-		 #+nil (let ((core_ids (dot (core_affinity--get_core_ids)
+		 #-nil (let ((core_ids (dot (core_affinity--get_core_ids)
 				      (unwrap))
 				 ))
 			   (for (a core_ids)
@@ -323,15 +323,13 @@ panic = \"abort\"
 		       (b (dot (std--thread--Builder--new)
 			       (name (dot (string "hwmon_reader")
 					  (into)))))
-		       )
-		   
-		   
-		   
-		   (b.spawn
+		       (reader_thread
+			(b.spawn
 		    (space
 		     move
 		     (lambda ()
 		       (do0
+			(core_affinity--set_for_current (make-instance core_affinity--CoreId :id 0))
 			(let (,@(loop for (name f) in *hwmon-files*
 				   and i_ from 0 collect
 				     `(,(format nil "f_~a" name) (dot (File--open (string ,f))
@@ -353,7 +351,14 @@ panic = \"abort\"
 					 (values (Utc--now)
 						 ,@(loop for (name f) in *hwmon-files* and i from 0 collect
 							(format nil "v_~a" name))))
-					(unwrap))))))))))))))
+					(unwrap))))))))))))
+		       )
+		   #+nil
+		   (cpu_affinity--LogicalCores--set_thread_affinity reader_thread)
+		   
+		   
+		   
+		   )))
 	     #+nil (let* ((client (request--Client--new))
 			  (body (dot client
 				     (get (string "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols=DBX,LITE,AMD,INTC&fields=regularMarketPrice"))

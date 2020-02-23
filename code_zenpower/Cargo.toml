@@ -14,9 +14,9 @@ imgui-winit-support = "*"
 chrono = "*"
 crossbeam-channel = "*"
 positioned-io = "*"
-#core_affinity = "*"
-cpu-affinity = "*"
-
+core_affinity = "*"
+#cpu-affinity = "*"
+#hwloc = "*"
 
 # this shaves 1MB off the binary
 [profile.release]

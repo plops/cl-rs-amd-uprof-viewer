@@ -41,10 +41,13 @@ martin@labolg ~/stage/cl-rs-amd-uprof-viewer/code_zenpower $ ls /sys/class/hwmon
 
 ** Play with cpu affinity
 
-- core_affinity doesn't show cores that were excluded with isolcpus
 - cpu-affinity is not compiling in stable rust (syscall crate uses feature)
 - rustup default nightly
 - type error: MaximumNumberOfSignalsPending = ::libc::RLIMIT_SIGPENDING
+
+
+- core_affinity doesn't show cores that were excluded with isolcpus
+- manually forcing id works with core_affinity, though
 
 ** Possible improvements
 
