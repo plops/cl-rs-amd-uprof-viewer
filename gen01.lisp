@@ -70,8 +70,6 @@ chrono = \"*\"
 crossbeam-channel = \"*\"
 positioned-io = \"*\"
 core_affinity = \"*\"
-#cpu-affinity = \"*\"
-#hwloc = \"*\"
 
 # this shaves 1MB off the binary
 [profile.release]
@@ -312,11 +310,9 @@ panic = \"abort\"
 	       
 
 	       (progn
-		 #+nil ,(logprint ""
-			    `(cpu_affinity--LogicalCores--IsSettingThreadAffinitySupported))
-		 #-nil (let ((core_ids (dot (core_affinity--get_core_ids)
+		 (let ((core_ids (dot (core_affinity--get_core_ids)
 				      (unwrap))
-				 ))
+			 ))
 			   (for (a core_ids)
 				      ,(logprint "affinty" `(a))))
 		 (let (
@@ -353,9 +349,7 @@ panic = \"abort\"
 							(format nil "v_~a" name))))
 					(unwrap))))))))))))
 		       )
-		   #+nil
-		   (cpu_affinity--LogicalCores--set_thread_affinity reader_thread)
-		   
+		   		   
 		   
 		   
 		   )))
