@@ -84,7 +84,7 @@ panic = \"abort\"
 	 `(do0
 	   (do0
 	    ;;"extern crate core_affinity;"
-	    "extern crate cpu-affinity;"
+	    "extern crate cpu_affinity;"
 	    (use (std thread spawn))
 	    (use (std io))
 	    (use
@@ -312,16 +312,20 @@ panic = \"abort\"
 	       
 
 	       (progn
-		 (let (#+nil (core_ids (dot (core_affinity--get_core_ids)
+		 ,(logprint ""
+			    `(cpu_affinity--LogicalCores--IsSettingThreadAffinitySupported))
+		 #+nil (let ((core_ids (dot (core_affinity--get_core_ids)
 				      (unwrap))
-			 )
+				 ))
+			   (for (a core_ids)
+				      ,(logprint "affinty" `(a))))
+		 (let (
 		       (b (dot (std--thread--Builder--new)
 			       (name (dot (string "hwmon_reader")
 					  (into)))))
 		       )
 		   
-		   #+nil (for (a core_ids)
-		     ,(logprint "affinty" `(a)))
+		   
 		   
 		   (b.spawn
 		    (space
